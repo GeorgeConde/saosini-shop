@@ -1,0 +1,243 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum ProductType {
+  REPRODUCTOR_COMERCIAL
+  REPRODUCTOR_PREMIUM
+  ALIMENTO
+  ACCESORIO
+  MEDICAMENTO
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  phone         String?
+  role          Role      @default(CUSTOMER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  orders        Order[]
+  posts         BlogPost[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  parentId    String?
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id                   String         @id @default(cuid())
+  name                 String
+  slug                 String         @unique
+  description          String
+  type                 ProductType
+  price                Decimal        @db.Decimal(10, 2)
+  compareAtPrice       Decimal?       @db.Decimal(10, 2)
+  requiresCoordination Boolean        @default(false)
+  manageInventory      Boolean        @default(true)
+  stockQuantity        Int            @default(0)
+  technicalData        Json?          // Flexible technical specs
+  status               String         @default("active") // active, inactive, draft
+  categoryId           String
+  category             Category       @relation(fields: [categoryId], references: [id])
+  images               ProductImage[]
+  videos               ProductVideo[]
+  orderItems           OrderItem[]
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  url       String
+  altText   String?
+  order     Int     @default(0)
+  isPrimary Boolean @default(false)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductVideo {
+  id        String  @id @default(cuid())
+  productId String
+  url       String
+  platform  String  @default("cloudinary") // youtube, vimeo, cloudinary
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  
+  shippingAddress Json        // JSON for complete address
+  status          OrderStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  
+  shippingMethod  String?
+  shippingCost    Decimal     @db.Decimal(10, 2)
+  trackingNumber  String?
+  
+  subtotal        Decimal     @db.Decimal(10, 2)
+  discount        Decimal     @default(0) @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  
+  notes           String?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  orderId         String
+  productId       String
+  quantity        Int
+  price           Decimal @db.Decimal(10, 2)
+  subtotal        Decimal @db.Decimal(10, 2)
+  productSnapshot Json    // Store product state at purchase time
+  
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Coupon {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  discountType  String    // percentage, fixed
+  discountValue Decimal   @db.Decimal(10, 2)
+  minPurchase   Decimal?  @db.Decimal(10, 2)
+  validFrom     DateTime
+  validTo       DateTime?
+  usageLimit    Int?
+  timesUsed     Int       @default(0)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model ShippingZone {
+  id               String  @id @default(cuid())
+  name             String
+  regions          Json    // List of regions/cities
+  shalomAvailable  Boolean @default(true)
+  marvisurAvailable Boolean @default(false)
+}
+
+model BlogPost {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  excerpt         String
+  content         String        @db.Text
+  featuredImage   String?
+  metaDescription String?
+  categoryId      String
+  category        BlogCategory  @relation(fields: [categoryId], references: [id])
+  authorId        String
+  author          User          @relation(fields: [authorId], references: [id])
+  status          PostStatus    @default(DRAFT)
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model BlogCategory {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  posts       BlogPost[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

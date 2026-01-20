@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --radius: 0.75rem;
+
+  /* Tailwind 4 uses CSS variables for theme configuration */
+  --color-primary: #7c2d12;
+  --color-primary-light: #9a3412;
+  --color-primary-dark: #431407;
+
+  --color-secondary: #166534;
+  --color-secondary-light: #15803d;
+  --color-secondary-dark: #064e3b;
+
+  --color-accent: #f59e0b;
+  --color-accent-light: #fbbf24;
+  --color-accent-dark: #b45309;
+
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui;
+  --font-display: var(--font-plus-jakarta), ui-sans-serif, system-ui;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1c1917;
+    --foreground: #fafaf9;
+  }
+}
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-dark: var(--color-primary-dark);
+
+  --color-secondary: var(--color-secondary);
+  --color-secondary-light: var(--color-secondary-light);
+  --color-secondary-dark: var(--color-secondary-dark);
+
+  --color-accent: var(--color-accent);
+  --color-accent-light: var(--color-accent-light);
+  --color-accent-dark: var(--color-accent-dark);
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-outfit), sans-serif;
+}
+
+@layer base {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+.glass {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 dark:bg-neutral-900/70 dark:border-neutral-800/20;
+}
+
+.btn-primary {
+  @apply bg-primary text-white px-6 py-2.5 rounded-lg font-medium transition-all hover:bg-primary-light active:scale-95 shadow-lg shadow-primary/20;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-white px-6 py-2.5 rounded-lg font-medium transition-all hover:bg-secondary-light active:scale-95 shadow-lg shadow-secondary/20;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-100 dark:bg-neutral-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 dark:bg-neutral-700 rounded-full border-2 border-transparent bg-clip-content;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-400 dark:bg-neutral-600;
+}
