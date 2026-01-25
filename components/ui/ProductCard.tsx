@@ -32,7 +32,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     return (
         <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ring-1 ring-neutral-200 flex flex-col h-full">
             {/* Product Image */}
-            <div className="relative aspect-square overflow-hidden bg-neutral-100">
+            <Link href={`/catalogo/${product.slug}`} className="relative aspect-square overflow-hidden bg-neutral-100 block">
                 <Image
                     src={primaryImage}
                     alt={product.name}
@@ -44,18 +44,18 @@ export default function ProductCard({ product }: ProductCardProps) {
                         Premium
                     </div>
                 )}
-            </div>
+            </Link>
 
             {/* Product Info */}
             <div className="p-5 flex flex-col flex-grow">
-                <div className="mb-2">
+                <Link href={`/catalogo/${product.slug}`} className="mb-2 block group/title">
                     <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
                         {product.category?.name || 'Producto'}
                     </span>
-                    <h3 className="text-lg font-bold text-neutral-900 line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="text-lg font-bold text-neutral-900 line-clamp-1 group-hover/title:text-primary transition-colors">
                         {product.name}
                     </h3>
-                </div>
+                </Link>
 
                 <p className="text-neutral-500 text-sm line-clamp-2 mb-4 flex-grow">
                     {product.description}

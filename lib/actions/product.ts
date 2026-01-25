@@ -41,7 +41,14 @@ export async function createProduct(formData: FormData) {
         });
 
         revalidatePath("/admin/productos");
-        return { success: true, product };
+        return {
+            success: true,
+            product: {
+                ...product,
+                price: Number(product.price),
+                compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null
+            }
+        };
     } catch (error) {
         console.error("Error creating product:", error);
         return { success: false, error: "Error al crear el producto" };
@@ -87,7 +94,14 @@ export async function updateProduct(id: string, formData: FormData) {
         });
 
         revalidatePath("/admin/productos");
-        return { success: true, product };
+        return {
+            success: true,
+            product: {
+                ...product,
+                price: Number(product.price),
+                compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null
+            }
+        };
     } catch (error) {
         console.error("Error updating product:", error);
         return { success: false, error: "Error al actualizar el producto" };

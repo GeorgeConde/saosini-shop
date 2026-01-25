@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { User, Menu, X, Wheat } from "lucide-react";
+import { User, Menu, X, Wheat, LogOut, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartDrawer from "../ui/CartDrawer";
 import CartButton from "../ui/CartButton";
+import { useSession, signOut } from "next-auth/react";
 
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const { data: session } = useSession();
 
 
     useEffect(() => {
@@ -57,9 +59,29 @@ export default function Navbar() {
                         {/* Actions */}
                         <div className="flex items-center space-x-4">
                             <CartButton onClick={() => setIsCartOpen(true)} />
-                            <Link href="/login" className="p-2 text-neutral-600 hover:text-primary transition-colors">
-                                <User className="w-6 h-6" />
-                            </Link>
+
+                            {session ? (
+                                <div className="flex items-center space-x-2">
+                                    <Link
+                                        href="/admin"
+                                        className="p-2 text-neutral-600 hover:text-primary transition-colors flex items-center"
+                                        title="Panel de Admin"
+                                    >
+                                        <Settings className="w-5 h-5" />
+                                    </Link>
+                                    <button
+                                        onClick={() => signOut({ callbackUrl: '/' })}
+                                        className="p-2 text-neutral-600 hover:text-red-500 transition-colors"
+                                        title="Cerrar sesión"
+                                    >
+                                        <LogOut className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <Link href="/login" className="p-2 text-neutral-600 hover:text-primary transition-colors">
+                                    <User className="w-6 h-6" />
+                                </Link>
+                            )}
 
                             {/* Mobile menu button */}
                             <div className="md:hidden flex items-center">

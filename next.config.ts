@@ -15,6 +15,30 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'www.jersimport.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.facebook.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scontent.*.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.imgur.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'imgur.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
     ],
   },
 };

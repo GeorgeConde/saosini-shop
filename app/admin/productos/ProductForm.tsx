@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { createProduct, updateProduct } from "@/lib/actions/product";
 import { ProductType } from "@prisma/client";
+import { CldUploadWidget } from "next-cloudinary";
 
 interface Category {
     id: string;
@@ -23,6 +24,7 @@ export default function ProductForm({
 }: ProductFormProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [imageUrl, setImageUrl] = useState<string>(initialData?.images?.[0]?.url || "");
 
     const isEditing = !!initialData;
 
@@ -32,6 +34,10 @@ export default function ProductForm({
         setError(null);
 
         const formData = new FormData(event.currentTarget);
+        // Ensure the uploaded image URL is included
+        if (imageUrl) {
+            formData.set("imageUrl", imageUrl);
+        }
 
         const result = isEditing
             ? await updateProduct(initialData.id, formData)
@@ -151,13 +157,53 @@ export default function ProductForm({
                         </div>
 
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-bold text-neutral-700 ml-1">URL de Imagen Principal</label>
-                            <input
-                                name="imageUrl"
-                                defaultValue={initialData?.images?.[0]?.url}
-                                placeholder="https://..."
-                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition-all"
-                            />
+                            <label className="text-sm font-bold text-neutral-700 ml-1">Imagen del Producto</label>
+                            <div className="flex flex-col space-y-4">
+                                {imageUrl && (
+                                    <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-neutral-200 group">
+                                        <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => setImageUrl("")}
+                                            className="absolute top-1 right-1 p-1 bg-white/80 hover:bg-white rounded-full transition-colors"
+                                        >
+                                            <X className="w-3 h-3 text-red-500" />
+                                        </button>
+                                    </div>
+                                )}
+                                <CldUploadWidget
+                                    uploadPreset="saosini_shop"
+                                    onSuccess={(result: any) => {
+                                        if (result.info && typeof result.info !== "string") {
+                                            setImageUrl(result.info.secure_url);
+                                        }
+                                    }}
+                                    options={{
+                                        maxFiles: 1,
+                                        resourceType: "image",
+                                        clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+                                        maxFileSize: 5000000, // 5MB
+                                        folder: "saosini-products"
+                                    }}
+                                >
+                                    {({ open }) => (
+                                        <button
+                                            type="button"
+                                            onClick={() => open()}
+                                            className="w-full px-4 py-3 rounded-xl bg-primary/10 border border-dashed border-primary/30 hover:border-primary hover:bg-primary/20 transition-all text-sm font-bold text-primary flex items-center justify-center gap-2"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                            </svg>
+                                            {imageUrl ? 'Cambiar Imagen' : 'Subir Imagen desde tu PC'}
+                                        </button>
+                                    )}
+                                </CldUploadWidget>
+                                <p className="text-xs text-neutral-500 ml-1">
+                                    📸 Sube imágenes desde tu computadora. Máximo 5MB. Formatos: JPG, PNG, WebP
+                                </p>
+                                <input type="hidden" name="imageUrl" value={imageUrl} />
+                            </div>
                         </div>
                     </div>
 
