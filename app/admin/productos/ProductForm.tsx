@@ -24,7 +24,7 @@ export default function ProductForm({
 }: ProductFormProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [imageUrl, setImageUrl] = useState<string>(initialData?.images?.[0]?.url || "");
+    const [imageUrls, setImageUrls] = useState<string[]>(initialData?.images?.map((img: any) => img.url) || []);
 
     const isEditing = !!initialData;
 
@@ -34,10 +34,8 @@ export default function ProductForm({
         setError(null);
 
         const formData = new FormData(event.currentTarget);
-        // Ensure the uploaded image URL is included
-        if (imageUrl) {
-            formData.set("imageUrl", imageUrl);
-        }
+        // Ensure the uploaded image URLs are included as JSON
+        formData.set("imageUrls", JSON.stringify(imageUrls));
 
         const result = isEditing
             ? await updateProduct(initialData.id, formData)
@@ -157,33 +155,42 @@ export default function ProductForm({
                         </div>
 
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-bold text-neutral-700 ml-1">Imagen del Producto</label>
+                            <label className="text-sm font-bold text-neutral-700 ml-1">Imágenes del Producto</label>
                             <div className="flex flex-col space-y-4">
-                                {imageUrl && (
-                                    <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-neutral-200 group">
-                                        <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                                        <button
-                                            type="button"
-                                            onClick={() => setImageUrl("")}
-                                            className="absolute top-1 right-1 p-1 bg-white/80 hover:bg-white rounded-full transition-colors"
-                                        >
-                                            <X className="w-3 h-3 text-red-500" />
-                                        </button>
+                                {imageUrls.length > 0 && (
+                                    <div className="grid grid-cols-4 gap-4">
+                                        {imageUrls.map((url, index) => (
+                                            <div key={url} className="relative aspect-square rounded-xl overflow-hidden border border-neutral-200 group">
+                                                <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setImageUrls(prev => prev.filter(u => u !== url))}
+                                                    className="absolute top-1 right-1 p-1 bg-white/80 hover:bg-white rounded-full transition-colors shadow-sm"
+                                                >
+                                                    <X className="w-3 h-3 text-red-500" />
+                                                </button>
+                                                {index === 0 && (
+                                                    <div className="absolute bottom-0 left-0 right-0 bg-primary/80 text-white text-[8px] font-bold text-center py-0.5">
+                                                        PRINCIPAL
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                                 <CldUploadWidget
                                     uploadPreset="saosini_shop"
                                     onSuccess={(result: any) => {
                                         if (result.info && typeof result.info !== "string") {
-                                            setImageUrl(result.info.secure_url);
+                                            setImageUrls(prev => [...prev, result.info.secure_url]);
                                         }
                                     }}
                                     options={{
-                                        maxFiles: 1,
+                                        maxFiles: 10,
                                         resourceType: "image",
                                         clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
-                                        maxFileSize: 5000000, // 5MB
-                                        folder: "saosini-products"
+                                        maxFileSize: 5000000,
+                                        folder: "saosini-products",
                                     }}
                                 >
                                     {({ open }) => (
@@ -195,17 +202,17 @@ export default function ProductForm({
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                             </svg>
-                                            {imageUrl ? 'Cambiar Imagen' : 'Subir Imagen desde tu PC'}
+                                            Subir Imágenes ({imageUrls.length}/10)
                                         </button>
                                     )}
                                 </CldUploadWidget>
                                 <p className="text-xs text-neutral-500 ml-1">
-                                    📸 Sube imágenes desde tu computadora. Máximo 5MB. Formatos: JPG, PNG, WebP
+                                    📸 Sube hasta 10 imágenes. La primera será la principal. Máximo 5MB c/u.
                                 </p>
-                                <input type="hidden" name="imageUrl" value={imageUrl} />
                             </div>
                         </div>
                     </div>
+
 
                     <div className="pt-4 flex items-center justify-end space-x-4">
                         <button

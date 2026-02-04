@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { X, Loader2, Eye } from 'lucide-react';
+import { X, Loader2, Eye, Upload } from 'lucide-react';
 import { createPost, updatePost } from '@/lib/actions/blog';
+import { CldUploadWidget } from "next-cloudinary";
 
 interface BlogEditorProps {
     onClose: () => void;
@@ -15,6 +16,7 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [preview, setPreview] = useState(false);
+    const [featuredImage, setFeaturedImage] = useState<string>(initialData?.featuredImage || "");
 
     const isEditing = !!initialData;
 
@@ -26,6 +28,10 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
         const formData = new FormData(event.currentTarget);
         formData.set("authorId", userId);
         formData.set("shouldPublish", shouldPublish.toString());
+
+        if (featuredImage) {
+            formData.set("featuredImage", featuredImage);
+        }
 
         const result = isEditing
             ? await updatePost(initialData.id, formData)
@@ -94,14 +100,46 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-neutral-700 ml-1">Imagen Destacada (URL)</label>
-                            <input
-                                name="featuredImage"
-                                type="url"
-                                defaultValue={initialData?.featuredImage}
-                                placeholder="https://ejemplo.com/imagen.jpg"
-                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition-all"
-                            />
+                            <label className="text-sm font-bold text-neutral-700 ml-1">Imagen Destacada</label>
+                            <div className="flex flex-col space-y-3">
+                                {featuredImage && (
+                                    <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-neutral-200 group">
+                                        <img src={featuredImage} alt="Preview" className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => setFeaturedImage("")}
+                                            className="absolute top-1 right-1 p-1 bg-white/80 hover:bg-white rounded-full transition-colors"
+                                        >
+                                            <X className="w-3 h-3 text-red-500" />
+                                        </button>
+                                    </div>
+                                )}
+                                <CldUploadWidget
+                                    uploadPreset="saosini_shop"
+                                    onSuccess={(result: any) => {
+                                        if (result.info && typeof result.info !== "string") {
+                                            setFeaturedImage(result.info.secure_url);
+                                        }
+                                    }}
+                                    options={{
+                                        maxFiles: 1,
+                                        resourceType: "image",
+                                        folder: "saosini-blog",
+                                    }}
+                                >
+                                    {({ open }) => (
+                                        <button
+                                            type="button"
+                                            onClick={() => open()}
+                                            className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-dashed border-primary/30 hover:border-primary hover:bg-primary/10 transition-all text-sm font-bold text-primary flex items-center justify-center gap-2"
+                                        >
+                                            <Upload className="w-4 h-4" />
+                                            {featuredImage ? 'Cambiar Imagen' : 'Subir Imagen Destacada'}
+                                        </button>
+                                    )}
+                                </CldUploadWidget>
+                                <input type="hidden" name="featuredImage" value={featuredImage} />
+                            </div>
                         </div>
 
                         <div className="md:col-span-2 space-y-2">
@@ -177,3 +215,4 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
         </div>
     );
 }
+

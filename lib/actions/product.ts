@@ -12,8 +12,10 @@ export async function createProduct(formData: FormData) {
         const stockQuantity = parseInt(formData.get("stockQuantity") as string);
         const categoryId = formData.get("categoryId") as string;
         const type = formData.get("type") as ProductType;
-        const imageUrl = formData.get("imageUrl") as string;
+        const imagesJson = formData.get("imageUrls") as string;
+        const imageUrls: string[] = imagesJson ? JSON.parse(imagesJson) : [];
         const status = formData.get("status") as string || "active";
+
 
         // Generar slug simple
         const slug = name.toLowerCase()
@@ -32,11 +34,12 @@ export async function createProduct(formData: FormData) {
                 type,
                 status,
                 images: {
-                    create: imageUrl ? [{
-                        url: imageUrl,
-                        isPrimary: true
-                    }] : []
+                    create: imageUrls.map((url, index) => ({
+                        url,
+                        isPrimary: index === 0
+                    }))
                 }
+
             }
         });
 
@@ -63,8 +66,10 @@ export async function updateProduct(id: string, formData: FormData) {
         const stockQuantity = parseInt(formData.get("stockQuantity") as string);
         const categoryId = formData.get("categoryId") as string;
         const type = formData.get("type") as ProductType;
-        const imageUrl = formData.get("imageUrl") as string;
+        const imagesJson = formData.get("imageUrls") as string;
+        const imageUrls: string[] = imagesJson ? JSON.parse(imagesJson) : [];
         const status = formData.get("status") as string || "active";
+
 
         // Generar slug simple
         const slug = name.toLowerCase()
@@ -84,12 +89,13 @@ export async function updateProduct(id: string, formData: FormData) {
                 type,
                 status,
                 images: {
-                    deleteMany: imageUrl ? {} : undefined,
-                    create: imageUrl ? [{
-                        url: imageUrl,
-                        isPrimary: true
-                    }] : undefined
+                    deleteMany: {}, // Delete all old images and replace with new ones
+                    create: imageUrls.map((url, index) => ({
+                        url,
+                        isPrimary: index === 0
+                    }))
                 }
+
             }
         });
 

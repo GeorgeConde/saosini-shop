@@ -138,6 +138,8 @@ export async function createBlogCategory(formData: FormData) {
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
+        const image = formData.get("image") as string;
+
 
         const slug = name
             .toLowerCase()
@@ -152,9 +154,11 @@ export async function createBlogCategory(formData: FormData) {
             data: {
                 name,
                 slug,
-                description: description || null
+                description: description || null,
+                image: image || null
             }
         });
+
 
         revalidatePath("/admin/blog/categorias");
         return { success: true, category };
@@ -168,6 +172,8 @@ export async function updateBlogCategory(id: string, formData: FormData) {
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
+        const image = formData.get("image") as string;
+
 
         const slug = name
             .toLowerCase()
@@ -183,9 +189,11 @@ export async function updateBlogCategory(id: string, formData: FormData) {
             data: {
                 name,
                 slug,
-                description: description || null
+                description: description || null,
+                image: image || null
             }
         });
+
 
         revalidatePath("/admin/blog/categorias");
         return { success: true, category };

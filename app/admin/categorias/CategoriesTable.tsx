@@ -9,6 +9,7 @@ interface Category {
     name: string;
     slug: string;
     description: string | null;
+    image: string | null;
     _count: {
         products: number;
     };
@@ -58,6 +59,7 @@ export default function CategoriesTable({ categories, onEdit }: CategoriesTableP
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-neutral-50 text-neutral-400 text-[10px] font-bold uppercase tracking-wider">
+                                <th className="px-6 py-4">Imagen</th>
                                 <th className="px-6 py-4">Categoría</th>
                                 <th className="px-6 py-4">Descripción</th>
                                 <th className="px-6 py-4 text-center">Productos</th>
@@ -67,6 +69,17 @@ export default function CategoriesTable({ categories, onEdit }: CategoriesTableP
                         <tbody className="divide-y divide-neutral-100">
                             {filteredCategories.map((cat) => (
                                 <tr key={cat.id} className={`hover:bg-neutral-50 transition-colors group ${deletingId === cat.id ? 'opacity-50' : ''}`}>
+                                    <td className="px-6 py-4">
+                                        <div className="w-12 h-12 rounded-xl bg-neutral-100 overflow-hidden border border-neutral-200">
+                                            {cat.image ? (
+                                                <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-neutral-300">
+                                                    N/A
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
                                     <td className="px-6 py-4 font-bold text-neutral-900">{cat.name}</td>
                                     <td className="px-6 py-4 text-sm text-neutral-500 max-w-xs truncate">
                                         {cat.description || '-'}
@@ -102,3 +115,4 @@ export default function CategoriesTable({ categories, onEdit }: CategoriesTableP
         </div>
     );
 }
+

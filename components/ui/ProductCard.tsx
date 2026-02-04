@@ -1,5 +1,6 @@
 "use client";
 
+import { CldImage } from 'next-cloudinary';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart, MessageCircle, Info, Check } from 'lucide-react';
@@ -33,12 +34,24 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ring-1 ring-neutral-200 flex flex-col h-full">
             {/* Product Image */}
             <Link href={`/catalogo/${product.slug}`} className="relative aspect-square overflow-hidden bg-neutral-100 block">
-                <Image
-                    src={primaryImage}
-                    alt={product.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                {primaryImage.includes('cloudinary.com') || !primaryImage.startsWith('http') ? (
+                    <CldImage
+                        src={primaryImage}
+                        alt={product.name}
+                        width={400}
+                        height={400}
+                        crop="fill"
+                        gravity="auto"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                ) : (
+                    <Image
+                        src={primaryImage}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                )}
                 {product.type === 'REPRODUCTOR_PREMIUM' && (
                     <div className="absolute top-3 left-3 bg-accent text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg uppercase tracking-wider">
                         Premium

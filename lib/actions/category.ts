@@ -7,6 +7,8 @@ export async function createCategory(formData: FormData) {
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
+        const image = formData.get("image") as string;
+
 
         const slug = name.toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -17,9 +19,12 @@ export async function createCategory(formData: FormData) {
             data: {
                 name,
                 slug,
-                description
+                description,
+                image
             }
         });
+
+
 
         revalidatePath("/admin/categorias");
         revalidatePath("/admin/productos");
@@ -34,6 +39,7 @@ export async function updateCategory(id: string, formData: FormData) {
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
+        const image = formData.get("image") as string;
 
         const slug = name.toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -45,13 +51,15 @@ export async function updateCategory(id: string, formData: FormData) {
             data: {
                 name,
                 slug,
-                description
+                description,
+                image
             }
         });
 
         revalidatePath("/admin/categorias");
         revalidatePath("/admin/productos");
         return { success: true, category };
+
     } catch (error) {
         console.error("Error updating category:", error);
         return { success: false, error: "Error al actualizar la categoría" };

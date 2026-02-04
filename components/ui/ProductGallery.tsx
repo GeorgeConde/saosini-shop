@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from 'react';
+import { CldImage } from 'next-cloudinary';
 import Image from 'next/image';
 import { Star, ChevronUp, ChevronDown, Maximize2 } from 'lucide-react';
 
@@ -46,12 +47,24 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                                     : 'ring-neutral-200 hover:ring-primary/50'
                                     }`}
                             >
-                                <Image
-                                    src={img.url}
-                                    alt={`${productName} ${i + 1}`}
-                                    fill
-                                    className="object-cover"
-                                />
+                                {img.url.includes('cloudinary.com') || !img.url.startsWith('http') ? (
+                                    <CldImage
+                                        src={img.url}
+                                        alt={`${productName} ${i + 1}`}
+                                        width={100}
+                                        height={100}
+                                        crop="fill"
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <Image
+                                        src={img.url}
+                                        alt={`${productName} ${i + 1}`}
+                                        width={100}
+                                        height={100}
+                                        className="object-cover h-full w-full"
+                                    />
+                                )}
                             </button>
                         ))}
                     </div>
@@ -67,16 +80,31 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                     onMouseLeave={() => setIsHovering(false)}
                     className="relative aspect-square rounded-3xl overflow-hidden shadow-sm ring-1 ring-neutral-200 bg-white cursor-crosshair"
                 >
-                    <Image
-                        src={selectedImage}
-                        alt={productName}
-                        fill
-                        className={`object-contain transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
-                        style={isHovering ? {
-                            transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
-                        } : undefined}
-                        priority
-                    />
+                    {selectedImage.includes('cloudinary.com') || !selectedImage.startsWith('http') ? (
+                        <CldImage
+                            src={selectedImage}
+                            alt={productName}
+                            width={800}
+                            height={800}
+                            crop="limit"
+                            className={`object-contain transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
+                            style={isHovering ? {
+                                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
+                            } : undefined}
+                            priority
+                        />
+                    ) : (
+                        <Image
+                            src={selectedImage}
+                            alt={productName}
+                            fill
+                            className={`object-contain transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
+                            style={isHovering ? {
+                                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
+                            } : undefined}
+                            priority
+                        />
+                    )}
 
                     {isPremium && (
                         <div className="absolute top-4 left-4 bg-accent text-white font-bold px-3 py-1 rounded-full shadow-lg flex items-center space-x-1 text-xs">
