@@ -4,6 +4,32 @@ import { getProductBySlug } from '@/lib/actions/product';
 import ProductGallery from '@/components/ui/ProductGallery';
 import AddToCart from '@/components/ui/AddToCart';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+    const { slug } = await params;
+    const { product } = await getProductBySlug(slug);
+
+    if (!product) return { title: 'Producto no encontrado' };
+
+    const primaryImage = product.images?.find((img: any) => img.isPrimary)?.url || product.images?.[0]?.url;
+
+    return {
+        title: `${product.name} | Saosini Shop`,
+        description: product.description.substring(0, 160),
+        openGraph: {
+            title: product.name,
+            description: product.description.substring(0, 160),
+            images: primaryImage ? [primaryImage] : [],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: product.name,
+            description: product.description.substring(0, 160),
+            images: primaryImage ? [primaryImage] : [],
+        }
+    };
+}
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
     const { slug } = await params;
@@ -196,6 +222,33 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                     </div>
                 </div>
             </div>
+
+            {/* Structured Data for SEO */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org/",
+                        "@type": "Product",
+                        "name": product.name,
+                        "image": product.images.map((img: any) => img.url),
+                        "description": product.description,
+                        "sku": `SS-${product.id.slice(-6)}`,
+                        "brand": {
+                            "@type": "Brand",
+                            "name": "Saosini Shop"
+                        },
+                        "offers": {
+                            "@type": "Offer",
+                            "url": `${process.env.NEXTAUTH_URL}/catalogo/${product.slug}`,
+                            "priceCurrency": "PEN",
+                            "price": Number(product.price).toFixed(2),
+                            "availability": product.stockQuantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                            "itemCondition": "https://schema.org/NewCondition"
+                        }
+                    })
+                }}
+            />
         </div>
     );
 }

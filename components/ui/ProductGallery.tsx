@@ -42,7 +42,7 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                             <button
                                 key={i}
                                 onClick={() => setSelectedImage(img.url)}
-                                className={`relative aspect-square w-16 md:w-20 rounded-xl overflow-hidden shadow-sm ring-1 transition-all ${selectedImage === img.url
+                                className={`relative aspect-[4/5] w-16 md:w-20 rounded-xl overflow-hidden shadow-sm ring-1 transition-all ${selectedImage === img.url
                                     ? 'ring-primary ring-2'
                                     : 'ring-neutral-200 hover:ring-primary/50'
                                     }`}
@@ -50,19 +50,19 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                                 {img.url.includes('cloudinary.com') || !img.url.startsWith('http') ? (
                                     <CldImage
                                         src={img.url}
-                                        alt={`${productName} ${i + 1}`}
+                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Saosini Shop`}
                                         width={100}
-                                        height={100}
+                                        height={125}
                                         crop="fill"
-                                        className="object-cover"
+                                        className="object-contain w-full h-full bg-neutral-50"
                                     />
                                 ) : (
                                     <Image
                                         src={img.url}
-                                        alt={`${productName} ${i + 1}`}
+                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Saosini Shop`}
                                         width={100}
-                                        height={100}
-                                        className="object-cover h-full w-full"
+                                        height={125}
+                                        className="object-contain h-full w-full bg-neutral-50"
                                     />
                                 )}
                             </button>
@@ -78,16 +78,16 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                     onMouseMove={handleMouseMove}
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
-                    className="relative aspect-square rounded-3xl overflow-hidden shadow-sm ring-1 ring-neutral-200 bg-white cursor-crosshair"
+                    className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-sm ring-1 ring-neutral-200 bg-white cursor-crosshair"
                 >
                     {selectedImage.includes('cloudinary.com') || !selectedImage.startsWith('http') ? (
                         <CldImage
                             src={selectedImage}
-                            alt={productName}
+                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Saosini Shop`}
                             width={800}
-                            height={800}
+                            height={1000}
                             crop="limit"
-                            className={`object-contain transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
+                            className={`object-contain w-full h-full transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
                             style={isHovering ? {
                                 transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
                             } : undefined}
@@ -96,9 +96,9 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                     ) : (
                         <Image
                             src={selectedImage}
-                            alt={productName}
+                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Saosini Shop`}
                             fill
-                            className={`object-contain transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
+                            className={`object-contain w-full h-full transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
                             style={isHovering ? {
                                 transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
                             } : undefined}

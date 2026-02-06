@@ -24,7 +24,7 @@ export default function ProductForm({
 }: ProductFormProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [imageUrls, setImageUrls] = useState<string[]>(initialData?.images?.map((img: any) => img.url) || []);
+    const [images, setImages] = useState<{ url: string, altText?: string }[]>(initialData?.images?.map((img: any) => ({ url: img.url, altText: img.altText })) || []);
 
     const isEditing = !!initialData;
 
@@ -34,8 +34,8 @@ export default function ProductForm({
         setError(null);
 
         const formData = new FormData(event.currentTarget);
-        // Ensure the uploaded image URLs are included as JSON
-        formData.set("imageUrls", JSON.stringify(imageUrls));
+        // Ensure the uploaded images with alt texts are included as JSON
+        formData.set("images", JSON.stringify(images));
 
         const result = isEditing
             ? await updateProduct(initialData.id, formData)
@@ -157,23 +157,39 @@ export default function ProductForm({
                         <div className="space-y-2 md:col-span-2">
                             <label className="text-sm font-bold text-neutral-700 ml-1">Imágenes del Producto</label>
                             <div className="flex flex-col space-y-4">
-                                {imageUrls.length > 0 && (
-                                    <div className="grid grid-cols-4 gap-4">
-                                        {imageUrls.map((url, index) => (
-                                            <div key={url} className="relative aspect-square rounded-xl overflow-hidden border border-neutral-200 group">
-                                                <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                {images.length > 0 && (
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {images.map((img, index) => (
+                                            <div key={img.url} className="flex items-center space-x-4 p-3 bg-neutral-50 rounded-2xl border border-neutral-200 group">
+                                                <div className="relative h-20 w-20 shrink-0 rounded-xl overflow-hidden border border-neutral-200">
+                                                    <img src={img.url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                                    {index === 0 && (
+                                                        <div className="absolute bottom-0 left-0 right-0 bg-primary/80 text-white text-[8px] font-bold text-center py-0.5">
+                                                            PRINCIPAL
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-grow space-y-2">
+                                                    <label className="text-[10px] font-bold text-neutral-500 uppercase ml-1">Texto Alternativo (SEO)</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Describa la imagen para Google..."
+                                                        value={img.altText || ""}
+                                                        onChange={(e) => {
+                                                            const newImages = [...images];
+                                                            newImages[index].altText = e.target.value;
+                                                            setImages(newImages);
+                                                        }}
+                                                        className="w-full px-3 py-2 text-sm rounded-lg bg-white border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                                    />
+                                                </div>
                                                 <button
                                                     type="button"
-                                                    onClick={() => setImageUrls(prev => prev.filter(u => u !== url))}
-                                                    className="absolute top-1 right-1 p-1 bg-white/80 hover:bg-white rounded-full transition-colors shadow-sm"
+                                                    onClick={() => setImages(prev => prev.filter(i => i.url !== img.url))}
+                                                    className="p-2 hover:bg-red-50 rounded-full transition-colors text-neutral-400 hover:text-red-500"
                                                 >
-                                                    <X className="w-3 h-3 text-red-500" />
+                                                    <X className="w-5 h-5" />
                                                 </button>
-                                                {index === 0 && (
-                                                    <div className="absolute bottom-0 left-0 right-0 bg-primary/80 text-white text-[8px] font-bold text-center py-0.5">
-                                                        PRINCIPAL
-                                                    </div>
-                                                )}
                                             </div>
                                         ))}
                                     </div>
@@ -182,7 +198,7 @@ export default function ProductForm({
                                     uploadPreset="saosini_shop"
                                     onSuccess={(result: any) => {
                                         if (result.info && typeof result.info !== "string") {
-                                            setImageUrls(prev => [...prev, result.info.secure_url]);
+                                            setImages(prev => [...prev, { url: result.info.secure_url, altText: "" }]);
                                         }
                                     }}
                                     options={{
@@ -202,7 +218,7 @@ export default function ProductForm({
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                             </svg>
-                                            Subir Imágenes ({imageUrls.length}/10)
+                                            Subir Imágenes ({images.length}/10)
                                         </button>
                                     )}
                                 </CldUploadWidget>

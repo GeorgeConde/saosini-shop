@@ -188,24 +188,11 @@ model OrderItem {
   product Product @relation(fields: [productId], references: [id])
 }
 
-model Coupon {
-  id            String    @id @default(cuid())
-  code          String    @unique
-  discountType  String    // percentage, fixed
-  discountValue Decimal   @db.Decimal(10, 2)
-  minPurchase   Decimal?  @db.Decimal(10, 2)
-  validFrom     DateTime
-  validTo       DateTime?
-  usageLimit    Int?
-  timesUsed     Int       @default(0)
-  active        Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-}
 
 model ShippingZone {
   id               String  @id @default(cuid())
   name             String
+  cost             Decimal @db.Decimal(10, 2)
   regions          Json    // List of regions/cities
   shalomAvailable  Boolean @default(true)
   marvisurAvailable Boolean @default(false)

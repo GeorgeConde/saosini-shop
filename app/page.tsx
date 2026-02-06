@@ -44,11 +44,11 @@ export default function Home() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
           <div className="max-w-2xl space-y-6">
-            <span className="inline-block px-3 py-1 bg-accent/20 border border-accent/30 rounded-full text-accent text-xs font-bold uppercase tracking-wider">
-              Bienvenidos a Granja de Cuyes
+            <span className="inline-block px-3 py-1 bg-secondary/20 border border-secondary/30 rounded-full text-secondary text-xs font-bold uppercase tracking-wider">
+              Bienvenidos a SAOSINI Shop
             </span>
             <h1 className="text-5xl md:text-7xl font-display font-bold leading-tight">
-              Excelencia Genética en <span className="text-accent">Cuyes del Perú</span>
+              Excelencia Nutricional para tus <span className="text-secondary">Cuyes</span>
             </h1>
             <p className="text-lg md:text-xl text-neutral-200 leading-relaxed">
               Venta de reproductores premium, alimento balanceado y todo lo necesario para tu emprendimiento en la crianza de cuyes.
@@ -138,7 +138,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-8">
-              <h2 className="text-4xl md:text-5xl leading-tight">Comprometidos con el Éxito de tu <span className="text-primary">Granja</span></h2>
+              <h2 className="text-4xl md:text-5xl leading-tight">Comprometidos con el Éxito de su <span className="text-primary">Inversión</span></h2>
               <p className="text-neutral-600 text-lg leading-relaxed">
                 Nuestros ejemplares son criados con los más altos estándares de bioseguridad y nutrición.
                 No solo vendemos cuyes, entregamos el futuro de tu negocio.
@@ -183,9 +183,9 @@ export default function Home() {
             Contáctanos hoy mismo para una asesoría personalizada sobre los mejores reproductores para tu zona.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <a href="https://wa.me/51987654321" target="_blank" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center space-x-3 transition-all shadow-xl shadow-green-900/20">
+            <a href="https://wa.me/51926069493" target="_blank" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center space-x-3 transition-all shadow-xl shadow-green-900/20">
               <Phone className="w-5 h-5" />
-              <span>Consultar por WhatsApp</span>
+              <span>Consultar con un Experto</span>
             </a>
           </div>
         </div>

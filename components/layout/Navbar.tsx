@@ -1,19 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { User, Menu, X, Wheat, LogOut, Settings } from "lucide-react";
+import { User, Menu, X, LogOut, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartDrawer from "../ui/CartDrawer";
 import CartButton from "../ui/CartButton";
 import { useSession, signOut } from "next-auth/react";
-
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { data: session } = useSession();
-
 
     useEffect(() => {
         setMounted(true);
@@ -33,13 +31,35 @@ export default function Navbar() {
             <nav className="sticky top-0 z-50 glass shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16 items-center">
-                        {/* Logo */}
-                        <Link href="/" className="flex items-center space-x-2">
-                            <div className="bg-primary p-1.5 rounded-lg">
-                                <Wheat className="w-6 h-6 text-white" />
+                        {/* Logo Official Saosini: SA (Symbol) SINI */}
+                        <Link href="/" className="flex items-center space-x-1 group">
+                            <span className="font-display font-bold text-3xl text-[#00473e] tracking-tighter uppercase transition-colors group-hover:text-[#b68a00]">
+                                SA
+                            </span>
+                            <div className="relative w-12 h-12 flex items-center justify-center">
+                                {/* Official Symbol acting as 'O' */}
+                                <div className="absolute inset-0 border-2 border-[#b68a00] rounded-full group-hover:scale-110 transition-transform duration-300 shadow-sm" />
+                                <svg
+                                    viewBox="0 0 100 100"
+                                    className="w-8 h-8 text-[#00473e] relative z-10"
+                                    fill="currentColor"
+                                >
+                                    {/* Left Guinea Pig Head */}
+                                    <path d="M48,42 C48,32 38,27 28,32 C18,37 18,52 28,57 C38,62 48,57 48,52 L48,72 C48,82 50,85 52,82" />
+                                    {/* Right Guinea Pig Head - Mirrored */}
+                                    <path d="M52,42 C52,32 62,27 72,32 C82,37 82,52 72,57 C62,62 52,57 52,52 L52,72 C52,82 50,85 48,82" />
+                                    {/* Eyes (Refined detail) */}
+                                    <circle cx="33" cy="42" r="4" fill="white" />
+                                    <circle cx="67" cy="42" r="4" fill="white" />
+                                    <circle cx="33" cy="42" r="2" fill="#00473e" />
+                                    <circle cx="67" cy="42" r="2" fill="#00473e" />
+                                    {/* Nose Detail */}
+                                    <circle cx="45" cy="48" r="1.5" />
+                                    <circle cx="55" cy="48" r="1.5" />
+                                </svg>
                             </div>
-                            <span className="font-display font-bold text-xl text-primary tracking-tight">
-                                Granja de Cuyes
+                            <span className="font-display font-bold text-3xl text-[#00473e] tracking-tighter uppercase transition-colors group-hover:text-[#b68a00]">
+                                SINI
                             </span>
                         </Link>
 

@@ -37,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {primaryImage.includes('cloudinary.com') || !primaryImage.startsWith('http') ? (
                     <CldImage
                         src={primaryImage}
-                        alt={product.name}
+                        alt={`${product.name} | Saosini Shop`}
                         width={400}
                         height={400}
                         crop="fill"
@@ -47,7 +47,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ) : (
                     <Image
                         src={primaryImage}
-                        alt={product.name}
+                        alt={`${product.name} | Saosini Shop`}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -87,7 +87,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className="flex items-center space-x-2">
                         {product.requiresCoordination ? (
                             <a
-                                href={`https://wa.me/51987654321?text=Hola, me interesa el producto: ${product.name}`}
+                                href={`https://wa.me/51926069493?text=Hola, me interesa el producto: ${product.name}`}
                                 target="_blank"
                                 className="p-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors shadow-lg shadow-green-200"
                                 title="Consultar por WhatsApp"

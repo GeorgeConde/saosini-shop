@@ -16,22 +16,22 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Granja de Cuyes Saosini - Excelencia Genética",
-    template: "%s | Saosini Shop"
+    default: "Saosini - Especialistas en el Mundo de los Cuyes",
+    template: "%s | Saosini"
   },
   description: "Especialistas en la venta de cuyes reproductores de alta calidad genética, alimento balanceado, accesorios y medicamentos. Envíos en todo el Perú.",
   keywords: ["cuyes reproductores", "granja de cuyes", "alimento para cuyes", "cuyes peru", "genética de cuyes"],
   openGraph: {
-    title: "Granja de Cuyes Saosini - Excelencia Genética",
+    title: "Saosini - Especialistas en el Mundo de los Cuyes",
     description: "Venta de reproductores y suministros para la crianza técnica de cuyes.",
-    url: "https://saosini.com",
-    siteName: "Saosini Shop",
+    url: "https://saosinicuyes.com",
+    siteName: "Saosini",
     locale: "es_PE",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Granja de Cuyes Saosini",
+    title: "Saosini",
     description: "Calidad premium en reproductores y suministros para cuyes.",
   }
 };

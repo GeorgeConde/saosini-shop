@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/mail";
+import { getShippingCost } from "./shipping";
 
 export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 
@@ -62,10 +64,8 @@ export async function createOrder(data: CreateOrderInput & { paymentToken?: stri
         }
 
         // Calculate Shipping based on Department
-        // Safe access to department even if shippingAddress is loosely typed in input
         const department = shippingAddress?.department || 'Lima';
-        const isLima = department === 'Lima' || department === 'Callao';
-        const shippingCost = isLima ? 15.00 : 25.00;
+        const shippingCost = await getShippingCost(department);
 
         const total = subtotal + shippingCost;
 
@@ -139,6 +139,30 @@ export async function createOrder(data: CreateOrderInput & { paymentToken?: stri
         }
 
         revalidatePath('/admin/pedidos');
+
+        // 5. Send Email Notifications (Don't await to avoid slowing down the response)
+        // Note: For critical systems, consider a background job or at least catching errors
+        const fullOrder = await prisma.order.findUnique({
+            where: { id: order.id },
+            include: { items: true }
+        });
+
+        if (fullOrder) {
+            sendOrderConfirmationEmail(
+                fullOrder.customerEmail,
+                fullOrder.customerName,
+                fullOrder.orderNumber,
+                Number(fullOrder.total),
+                fullOrder.items
+            ).catch(err => console.error("Error in background email confirmation:", err));
+
+            sendAdminOrderNotification(
+                fullOrder.orderNumber,
+                fullOrder.customerName,
+                Number(fullOrder.total)
+            ).catch(err => console.error("Error in background admin notification:", err));
+        }
+
         return { success: true, orderId: order.id };
 
     } catch (error) {

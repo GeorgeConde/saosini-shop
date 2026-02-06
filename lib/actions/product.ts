@@ -12,8 +12,8 @@ export async function createProduct(formData: FormData) {
         const stockQuantity = parseInt(formData.get("stockQuantity") as string);
         const categoryId = formData.get("categoryId") as string;
         const type = formData.get("type") as ProductType;
-        const imagesJson = formData.get("imageUrls") as string;
-        const imageUrls: string[] = imagesJson ? JSON.parse(imagesJson) : [];
+        const imagesJson = formData.get("images") as string;
+        const images: { url: string, altText?: string | null }[] = imagesJson ? JSON.parse(imagesJson) : [];
         const status = formData.get("status") as string || "active";
 
 
@@ -34,8 +34,9 @@ export async function createProduct(formData: FormData) {
                 type,
                 status,
                 images: {
-                    create: imageUrls.map((url, index) => ({
-                        url,
+                    create: images.map((img, index) => ({
+                        url: img.url,
+                        altText: img.altText,
                         isPrimary: index === 0
                     }))
                 }
@@ -66,8 +67,8 @@ export async function updateProduct(id: string, formData: FormData) {
         const stockQuantity = parseInt(formData.get("stockQuantity") as string);
         const categoryId = formData.get("categoryId") as string;
         const type = formData.get("type") as ProductType;
-        const imagesJson = formData.get("imageUrls") as string;
-        const imageUrls: string[] = imagesJson ? JSON.parse(imagesJson) : [];
+        const imagesJson = formData.get("images") as string;
+        const images: { url: string, altText?: string | null }[] = imagesJson ? JSON.parse(imagesJson) : [];
         const status = formData.get("status") as string || "active";
 
 
@@ -90,8 +91,9 @@ export async function updateProduct(id: string, formData: FormData) {
                 status,
                 images: {
                     deleteMany: {}, // Delete all old images and replace with new ones
-                    create: imageUrls.map((url, index) => ({
-                        url,
+                    create: images.map((img, index) => ({
+                        url: img.url,
+                        altText: img.altText,
                         isPrimary: index === 0
                     }))
                 }

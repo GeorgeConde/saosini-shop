@@ -12,19 +12,19 @@ export default {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
                 primary: {
-                    DEFAULT: "#7c2d12", // Warm Brown
-                    light: "#9a3412",
-                    dark: "#431407",
+                    DEFAULT: "#00473e", // Saosini Dark Green
+                    light: "#006356",
+                    dark: "#002b26",
                 },
                 secondary: {
-                    DEFAULT: "#166534", // Farm Green
-                    light: "#15803d",
-                    dark: "#064e3b",
+                    DEFAULT: "#b68a00", // Saosini Gold
+                    light: "#dca700",
+                    dark: "#8a6900",
                 },
                 accent: {
-                    DEFAULT: "#f59e0b", // Guinea Pig Orange/Amber
-                    light: "#fbbf24",
-                    dark: "#b45309",
+                    DEFAULT: "#00473e", // Reusing brand green or a variation
+                    light: "#008a78",
+                    dark: "#002b26",
                 },
                 neutral: {
                     50: "#fafaf9",

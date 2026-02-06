@@ -155,23 +155,6 @@ CREATE TABLE "OrderItem" (
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Coupon" (
-    "id" TEXT NOT NULL,
-    "code" TEXT NOT NULL,
-    "discountType" TEXT NOT NULL,
-    "discountValue" DECIMAL(10,2) NOT NULL,
-    "minPurchase" DECIMAL(10,2),
-    "validFrom" TIMESTAMP(3) NOT NULL,
-    "validTo" TIMESTAMP(3),
-    "usageLimit" INTEGER,
-    "timesUsed" INTEGER NOT NULL DEFAULT 0,
-    "active" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Coupon_pkey" PRIMARY KEY ("id")
-);
 
 -- CreateTable
 CREATE TABLE "ShippingZone" (
@@ -225,8 +208,6 @@ CREATE UNIQUE INDEX "Product_slug_key" ON "Product"("slug");
 -- CreateIndex
 CREATE UNIQUE INDEX "Order_orderNumber_key" ON "Order"("orderNumber");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Coupon_code_key" ON "Coupon"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BlogPost_slug_key" ON "BlogPost"("slug");
