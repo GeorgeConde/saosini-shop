@@ -42,7 +42,7 @@ export default function BlogCard({ post }: BlogCardProps) {
             </Link>
 
             <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center text-xs text-neutral-400 mb-4 space-x-4">
+                <div className="flex items-center text-xs text-neutral-600 mb-4 space-x-4">
                     <div className="flex items-center">
                         <Calendar className="w-3 h-3 mr-1" />
                         <span>
@@ -66,7 +66,7 @@ export default function BlogCard({ post }: BlogCardProps) {
                     </h3>
                 </Link>
 
-                <p className="text-neutral-500 text-sm line-clamp-3 mb-6 flex-grow">
+                <p className="text-neutral-700 text-sm line-clamp-3 mb-6 flex-grow">
                     {post.excerpt}
                 </p>
 

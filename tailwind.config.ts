@@ -12,31 +12,31 @@ export default {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
                 primary: {
-                    DEFAULT: "#00473e", // Saosini Dark Green
-                    light: "#006356",
-                    dark: "#002b26",
+                    DEFAULT: "#02733E", // Saosini Forest Green
+                    light: "#038C4D",
+                    dark: "#025939",
                 },
                 secondary: {
-                    DEFAULT: "#b68a00", // Saosini Gold
-                    light: "#dca700",
-                    dark: "#8a6900",
+                    DEFAULT: "#A67D03", // Saosini Gold
+                    light: "#F2E1AC",
+                    dark: "#806000",
                 },
                 accent: {
-                    DEFAULT: "#00473e", // Reusing brand green or a variation
-                    light: "#008a78",
-                    dark: "#002b26",
+                    DEFAULT: "#02733E",
+                    light: "#038C4D",
+                    dark: "#025939",
                 },
                 neutral: {
-                    50: "#fafaf9",
-                    100: "#f5f5f4",
-                    200: "#e7e5e4",
-                    300: "#d6d3d1",
-                    400: "#a8a29e",
-                    500: "#78716c",
-                    600: "#57534e",
-                    700: "#44403c",
-                    800: "#292524",
-                    900: "#1c1917",
+                    50: "#F2F2F2", // Using the new background as neutral 50
+                    100: "#E5E5E5",
+                    200: "#D4D4D4",
+                    300: "#A3A3A3",
+                    400: "#737373",
+                    500: "#525252",
+                    600: "#404040",
+                    700: "#262626",
+                    800: "#171717",
+                    900: "#0A0A0A",
                 }
             },
             borderRadius: {

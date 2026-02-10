@@ -5,7 +5,7 @@ import { useCartStore } from '@/lib/store/cart-store';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronLeft, MapPin, Truck, CreditCard, Loader2 } from 'lucide-react';
+import { ChevronLeft, MapPin, Truck, CreditCard, Loader2, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 
@@ -16,12 +16,7 @@ declare global {
     }
 }
 
-const DEPARTAMENTOS = [
-    "Amazonas", "Áncash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca",
-    "Callao", "Cusco", "Huancavelica", "Huánuco", "Ica", "Junín", "La Libertad",
-    "Lambayeque", "Lima", "Loreto", "Madre de Dios", "Moquegua", "Pasco",
-    "Piura", "Puno", "San Martín", "Tacna", "Tumbes", "Ucayali"
-];
+import { departamentos, provincias, distritos } from '@/lib/data/ubigeo';
 
 export default function CheckoutPage() {
     const { items, getTotalPrice, clearCart } = useCartStore();
@@ -61,6 +56,23 @@ export default function CheckoutPage() {
             // Cleanup if needed
         };
     }, [items, formData]);
+
+    // Dynamic Location Logic
+    const availableProvinces = formData.department ? provincias[formData.department] || [] : [];
+    const availableDistricts = formData.province ? distritos[formData.province] || [] : [];
+
+    // Effect to reset child fields when parent changes
+    useEffect(() => {
+        if (formData.department && !availableProvinces.includes(formData.province) && formData.province !== '') {
+            setFormData(prev => ({ ...prev, province: '', district: '' }));
+        }
+    }, [formData.department, availableProvinces, formData.province]);
+
+    useEffect(() => {
+        if (formData.province && !availableDistricts.includes(formData.district) && formData.district !== '') {
+            setFormData(prev => ({ ...prev, district: '' }));
+        }
+    }, [formData.province, availableDistricts, formData.district]);
 
     const subtotal = getTotalPrice();
 
@@ -131,6 +143,27 @@ export default function CheckoutPage() {
         }
     };
 
+    const handleWhatsAppCheckout = () => {
+        // Construct message
+        let message = `*¡Hola! Quiero realizar un pedido en Saosini Shop:*\n\n`;
+        items.forEach(item => {
+            message += `• ${item.quantity}x ${item.name} - S/ ${(item.price * item.quantity).toFixed(2)}\n`;
+        });
+        message += `\n*Envío:* ${isLima ? 'Local' : 'Nacional'} - S/ ${shipping.toFixed(2)}`;
+        message += `\n*TOTAL:* S/ ${total.toFixed(2)}\n\n`;
+        message += `*Mis Datos:*\n`;
+        message += `Nombre: ${formData.firstName} ${formData.lastName}\n`;
+        message += `Email: ${formData.email}\n`;
+        message += `Teléfono: ${formData.phone}\n`;
+        message += `Dirección: ${formData.address}\n`;
+        message += `Departamento: ${formData.department}\n`;
+        if (formData.province) message += `Provincia: ${formData.province}\n`;
+        if (formData.district) message += `Distrito: ${formData.district}\n`;
+
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/51926069493?text=${encodedMessage}`, '_blank');
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -140,16 +173,8 @@ export default function CheckoutPage() {
             return;
         }
 
-        setIsSubmitting(true);
-
-        // Open Culqi Payment Modal
-        if (culqiLoaded && window.Culqi) {
-            initCulqi();
-        } else {
-            console.error("Culqi not loaded properly");
-            alert("Error cargando pasarela de pagos, por favor refresca la página");
-            setIsSubmitting(false);
-        }
+        // For now, redirect to WhatsApp as payment gateway is pending
+        handleWhatsAppCheckout();
     };
 
     if (!mounted) return null;
@@ -214,7 +239,7 @@ export default function CheckoutPage() {
                                         required
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-neutral-900"
                                         placeholder="tu@email.com"
                                     />
                                 </div>
@@ -228,7 +253,7 @@ export default function CheckoutPage() {
                                             required
                                             value={formData.firstName}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-neutral-900"
                                         />
                                     </div>
                                     <div>
@@ -239,7 +264,7 @@ export default function CheckoutPage() {
                                             required
                                             value={formData.lastName}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-neutral-900"
                                         />
                                     </div>
                                 </div>
@@ -251,9 +276,10 @@ export default function CheckoutPage() {
                                         required
                                         value={formData.department}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none bg-white"
+                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none bg-white text-neutral-900 font-medium"
                                     >
-                                        {DEPARTAMENTOS.map(dep => (
+                                        <option value="" disabled>Seleccionar</option>
+                                        {departamentos.map(dep => (
                                             <option key={dep} value={dep}>{dep}</option>
                                         ))}
                                     </select>
@@ -262,25 +288,35 @@ export default function CheckoutPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 mb-1">Provincia</label>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="province"
+                                            required
                                             value={formData.province}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                            placeholder="Opcional"
-                                        />
+                                            disabled={!formData.department}
+                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none bg-white text-neutral-900 font-medium disabled:bg-neutral-100 disabled:text-neutral-400"
+                                        >
+                                            <option value="">Seleccionar</option>
+                                            {availableProvinces.map(prov => (
+                                                <option key={prov} value={prov}>{prov}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 mb-1">Distrito</label>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="district"
+                                            required
                                             value={formData.district}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                            placeholder="Opcional"
-                                        />
+                                            disabled={!formData.province}
+                                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none bg-white text-neutral-900 font-medium disabled:bg-neutral-100 disabled:text-neutral-400"
+                                        >
+                                            <option value="">Seleccionar</option>
+                                            {(availableDistricts.length > 0 ? availableDistricts : ['Otro']).map(dist => (
+                                                <option key={dist} value={dist}>{dist}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
 
@@ -292,7 +328,7 @@ export default function CheckoutPage() {
                                         required
                                         value={formData.address}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-neutral-900"
                                         placeholder="Av. Principal 123, Urb..."
                                     />
                                 </div>
@@ -305,7 +341,7 @@ export default function CheckoutPage() {
                                         required
                                         value={formData.phone}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-neutral-900"
                                     />
                                 </div>
                             </div>
@@ -371,27 +407,33 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={isSubmitting || !culqiLoaded}
-                                className="w-full btn-primary bg-primary mt-8 py-4 text-lg shadow-xl shadow-primary/20 flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                        <span>Procesando...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>Pagar con Tarjeta</span>
+                            <div className="space-y-3 mt-8">
+                                <button
+                                    type="submit"
+                                    className="w-full btn-primary bg-[#25D366] hover:bg-[#1fb854] py-4 text-lg shadow-xl shadow-green-900/10 flex items-center justify-center space-x-2"
+                                >
+                                    <MessageCircle className="w-6 h-6" />
+                                    <span>Completar Pedido por WhatsApp</span>
+                                </button>
+
+                                <div className="relative group">
+                                    <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="bg-neutral-900 text-white text-xs px-2 py-1 rounded font-bold">Próximamente</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        disabled={true}
+                                        className="w-full bg-neutral-100 text-neutral-400 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 cursor-not-allowed border border-neutral-200"
+                                    >
                                         <CreditCard className="w-5 h-5" />
-                                    </>
-                                )}
-                            </button>
+                                        <span>Pagar con Tarjeta (En Mantenimiento)</span>
+                                    </button>
+                                </div>
+                            </div>
 
                             <div className="mt-6 flex items-center justify-center text-xs text-neutral-400 space-x-2">
                                 <CreditCard className="w-4 h-4" />
-                                <span className="text-center">Pagos seguros con <b>Culqi</b>. Tus datos están protegidos.</span>
+                                <span className="text-center">Estamos actualizando nuestra pasarela de pagos. <b>Coordina tu compra directamente.</b></span>
                             </div>
                         </div>
                     </div>

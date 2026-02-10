@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { ChevronLeft, MessageCircle, ShieldCheck, HeartPulse, Info, AlertCircle, ShoppingCart, Share2, Facebook, Twitter, Instagram, ChevronRight, Grid } from 'lucide-react';
-import { getProductBySlug } from '@/lib/actions/product';
+import { getProductBySlug, getProducts } from '@/lib/actions/product';
 import ProductGallery from '@/components/ui/ProductGallery';
 import AddToCart from '@/components/ui/AddToCart';
+import ProductCard from '@/components/ui/ProductCard';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 
@@ -56,6 +57,12 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     if (product.technicalData && typeof product.technicalData === 'object') {
         technicalData = product.technicalData as any;
     }
+
+    // Fetch related products
+    const { products: relatedProductsRaw } = await getProducts(undefined, product.category?.name);
+    const relatedProducts = relatedProductsRaw
+        ?.filter(p => p.id !== product.id)
+        .slice(0, 4) || [];
 
     return (
         <div className="bg-white min-h-screen pt-24 pb-20">
@@ -223,6 +230,21 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                 </div>
             </div>
 
+            {/* Related Products */}
+            {relatedProducts.length > 0 && (
+                <div className="mt-24 border-t border-neutral-100 pt-24">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 className="text-3xl font-display font-bold text-neutral-900 mb-12 text-center">Productos Relacionados</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {relatedProducts.map(related => (
+                                <ProductCard key={related.id} product={related} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
             {/* Structured Data for SEO */}
             <script
                 type="application/ld+json"
@@ -249,7 +271,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                     })
                 }}
             />
-        </div>
+        </div >
     );
 }
 

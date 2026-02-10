@@ -1,0 +1,33 @@
+
+                    <div class="prose-content">
+                        <h2>El enemigo silencioso de tu rentabilidad</h2>
+                        <p>Uno de los mayores obstáculos en la crianza de cuyes es la presencia de ectoparásitos. Estos parásitos externos se alimentan de la sangre y células de la piel de tus animales, causando estrés constante y anemia.</p>
+                        
+                        <h3>¿Cómo detectar si tengo pulgas o ácaros?</h3>
+                        <ul>
+                            <li>Rascado constante y nerviosismo.</li>
+                            <li>Caída de pelo (alopecia) en cuello y lomo.</li>
+                            <li>Manchas de sangre en las paredes de las pozas.</li>
+                            <li>Pérdida de peso sin causa aparente.</li>
+                        </ul>
+
+                        <h2>Protocolo Técnico de Control</h2>
+                        
+                        <h3>1. Limpieza profunda</h3>
+                        <p>Los ectoparásitos pasan gran parte de su vida fuera del animal. Barre al ras del suelo y elimina refugios como ladrillos sueltos.</p>
+                        
+                        <h3>2. Tratamiento de Choque</h3>
+                        <p><strong>A. Al Cuy (Espolvoreo):</strong> Usa Bolfo o Carbadín al 5%. Cubre ojos y nariz, aplica a contrapelo.</p>
+                        <p><strong>B. Al Ambiente (Fumigación):</strong> Usa Cipermetrina. Fumiga paredes, pisos y techos con las pozas vacías.</p>
+
+                        <h3>3. La Regla de los 8 Días</h3>
+                        <p>El veneno no mata los huevos. Debes repetir el tratamiento exactamente a los <strong>8 días</strong> para eliminar a la nueva generación antes de que pongan más huevos.</p>
+
+                        <h3>Prevención</h3>
+                        <ul>
+                            <li>Cuarentena para nuevos animales.</li>
+                            <li>Control de visitas.</li>
+                            <li>Limpieza semanal de guano.</li>
+                        </ul>
+                    </div>
+                

@@ -17,10 +17,11 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
     const [error, setError] = useState<string | null>(null);
     const [preview, setPreview] = useState(false);
     const [featuredImage, setFeaturedImage] = useState<string>(initialData?.featuredImage || "");
+    const [shouldPublish, setShouldPublish] = useState(false);
 
     const isEditing = !!initialData;
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>, shouldPublish: boolean) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setLoading(true);
         setError(null);
@@ -65,7 +66,7 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
                     </button>
                 </div>
 
-                <form onSubmit={(e) => handleSubmit(e, false)} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
                     {error && (
                         <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">
                             {error}
@@ -191,6 +192,7 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
                         </button>
                         <button
                             type="submit"
+                            onClick={() => setShouldPublish(false)}
                             disabled={loading}
                             className="px-6 py-3 rounded-xl font-bold text-neutral-600 bg-neutral-100 hover:bg-neutral-200 transition-colors disabled:opacity-50"
                         >
@@ -198,11 +200,8 @@ export default function BlogEditor({ onClose, categories, initialData, userId }:
                             Guardar Borrador
                         </button>
                         <button
-                            type="button"
-                            onClick={(e) => {
-                                const form = e.currentTarget.closest('form');
-                                if (form) handleSubmit(new Event('submit') as any, true);
-                            }}
+                            type="submit"
+                            onClick={() => setShouldPublish(true)}
                             disabled={loading}
                             className="btn-primary flex items-center space-x-2 py-3 px-8 shadow-lg shadow-primary/20 disabled:opacity-50"
                         >

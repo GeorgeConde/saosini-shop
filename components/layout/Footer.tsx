@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Mail, Phone, MapPin, Wheat } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin, Youtube } from "lucide-react";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -24,10 +24,29 @@ export default function Footer() {
                             "La nutrición que tus cuyes merecen."
                         </p>
                         <div className="flex space-x-4">
-                            <a href="#" className="hover:text-accent transition-colors">
+                            <a
+                                href="https://www.youtube.com/@AgroAventurasSaosini"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-red-500 transition-colors"
+                                title="Agroaventuras Saosini en YouTube"
+                            >
+                                <Youtube className="w-5 h-5" />
+                            </a>
+                            <a
+                                href="https://www.facebook.com/saosinicuyes"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-blue-500 transition-colors"
+                                title="Saosini Cuyes en Facebook"
+                            >
                                 <Facebook className="w-5 h-5" />
                             </a>
-                            <a href="#" className="hover:text-accent transition-colors">
+                            <a
+                                href="#"
+                                className="hover:text-pink-500 transition-colors"
+                                title="Instagram"
+                            >
                                 <Instagram className="w-5 h-5" />
                             </a>
                         </div>
@@ -37,9 +56,9 @@ export default function Footer() {
                     <div>
                         <h4 className="text-white font-bold mb-6">Explorar</h4>
                         <ul className="space-y-3 text-sm">
-                            <li><Link href="/catalogo?categoria=reproductores" className="hover:text-accent transition-colors">Cuyes Reproductores</Link></li>
-                            <li><Link href="/catalogo?categoria=alimento" className="hover:text-accent transition-colors">Alimento Balanceado</Link></li>
-                            <li><Link href="/catalogo?categoria=accesorios" className="hover:text-accent transition-colors">Accesorios de Granja</Link></li>
+                            <li><Link href="/catalogo?category=Reproductores" className="hover:text-accent transition-colors">Cuyes Reproductores</Link></li>
+                            <li><Link href="/catalogo?category=Alimento" className="hover:text-accent transition-colors">Alimento Balanceado</Link></li>
+                            <li><Link href="/catalogo?category=Accesorios" className="hover:text-accent transition-colors">Accesorios de Granja</Link></li>
                             <li><Link href="/blog" className="hover:text-accent transition-colors">Guías de Crianza</Link></li>
                         </ul>
                     </div>
@@ -49,9 +68,9 @@ export default function Footer() {
                         <h4 className="text-white font-bold mb-6">Soporte</h4>
                         <ul className="space-y-3 text-sm">
                             <li><Link href="/contacto" className="hover:text-accent transition-colors">Contacto</Link></li>
+                            <li><Link href="/preguntas-frecuentes" className="hover:text-accent transition-colors">Preguntas Frecuentes</Link></li>
                             <li><Link href="/envios" className="hover:text-accent transition-colors">Políticas de Envío</Link></li>
                             <li><Link href="/terminos" className="hover:text-accent transition-colors">Términos y Condiciones</Link></li>
-                            <li><Link href="/privacidad" className="hover:text-accent transition-colors">Privacidad</Link></li>
                         </ul>
                     </div>
 
@@ -80,8 +99,12 @@ export default function Footer() {
                         © {currentYear} SAOSINI Shop. Todos los derechos reservados.
                     </p>
                     <div className="flex items-center space-x-6">
-                        <img src="/yape-logo.png" alt="Yape" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all cursor-not-allowed" title="Próximamente" />
-                        <img src="/plin-logo.png" alt="Plin" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all cursor-not-allowed" title="Próximamente" />
+                        <span className="text-xs text-neutral-500">Pagos Seguros con:</span>
+                        <div className="flex space-x-2">
+                            {/* Placeholders for payment icons if images are missing */}
+                            <div className="bg-white/10 px-2 py-1 rounded text-xs font-bold text-white/50">YAPE</div>
+                            <div className="bg-white/10 px-2 py-1 rounded text-xs font-bold text-white/50">PLIN</div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -62,6 +62,8 @@ export async function updatePost(id: string, formData: FormData) {
         const shouldPublish = formData.get("shouldPublish") === "true";
 
         // Generar slug desde el título
+        // Generar slug desde el título (DESACTIVADO PARA MANTENER URLs ESTABLES)
+        /*
         const slug = title
             .toLowerCase()
             .normalize("NFD")
@@ -70,6 +72,7 @@ export async function updatePost(id: string, formData: FormData) {
             .replace(/\s+/g, '-')
             .replace(/-+/g, '-')
             .replace(/^-+|-+$/g, '');
+        */
 
         const currentPost = await prisma.blogPost.findUnique({ where: { id } });
 
@@ -77,7 +80,7 @@ export async function updatePost(id: string, formData: FormData) {
             where: { id },
             data: {
                 title,
-                slug,
+                // slug, // No actualizar slug
                 excerpt,
                 content,
                 featuredImage: featuredImage || null,
@@ -90,7 +93,9 @@ export async function updatePost(id: string, formData: FormData) {
 
         revalidatePath("/admin/blog");
         revalidatePath("/blog");
-        revalidatePath(`/blog/${slug}`);
+        if (currentPost?.slug) {
+            revalidatePath(`/blog/${currentPost.slug}`);
+        }
         return { success: true, post };
     } catch (error) {
         console.error("Error updating post:", error);
@@ -281,9 +286,36 @@ export async function getPostBySlug(slug: string) {
         }
 
         return { success: true, post };
+        return { success: true, post };
     } catch (error) {
         console.error("Error fetching post by slug:", error);
         return { success: false, error: "Error al obtener el artículo" };
+    }
+}
+
+export async function getRecentPosts(excludeSlug?: string, limit = 3) {
+    try {
+        const posts = await prisma.blogPost.findMany({
+            where: {
+                status: PostStatus.PUBLISHED,
+                slug: { not: excludeSlug }
+            },
+            take: limit,
+            orderBy: { publishedAt: 'desc' },
+            include: {
+                author: {
+                    select: { name: true, image: true }
+                },
+                category: {
+                    select: { name: true, slug: true }
+                }
+            }
+        });
+
+        return { success: true, posts };
+    } catch (error) {
+        console.error("Error fetching recent posts:", error);
+        return { success: false, error: "Error al obtener artículos recientes", posts: [] };
     }
 }
 

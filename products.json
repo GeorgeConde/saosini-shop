@@ -1,0 +1,66 @@
+[
+  {
+    "id": "cmkkj2uo40001hxs9nt31ycpa",
+    "name": "BEBEDERO PARA CUYES CHUPON JEBE NEGRO",
+    "slug": "bebedero-para-cuyes-chupon-jebe-negro",
+    "price": "4",
+    "images": [
+      {
+        "id": "cmkkj2uo40002hxs9y18ufka0",
+        "productId": "cmkkj2uo40001hxs9nt31ycpa",
+        "url": "https://www.jersimport.com/wp-content/uploads/2019/09/3n-1.jpg",
+        "altText": null,
+        "order": 0,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "cmkrtmmo30001wwg3q8gsp5yu",
+    "name": "COMEDERO CUY, CONEJO",
+    "slug": "comedero-cuy-conejo",
+    "price": "3",
+    "images": [
+      {
+        "id": "cmkrtmmo30002wwg3cbheo0tz",
+        "productId": "cmkrtmmo30001wwg3q8gsp5yu",
+        "url": "https://www.jersimport.com/wp-content/uploads/2019/10/280.jpg",
+        "altText": null,
+        "order": 0,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "prod_h_rep_com",
+    "name": "Hembra Reproductora - Linea Comercial",
+    "slug": "hembra-reproductora-linea-comercial",
+    "price": "50",
+    "images": [
+      {
+        "id": "cml0ayw4m0000uyqud1gkqb61",
+        "productId": "prod_h_rep_com",
+        "url": "https://res.cloudinary.com/dpuyoreeb/image/upload/v1769655970/saosini-products/jcvkhzcx3pgtzma4ki2b.jpg",
+        "altText": null,
+        "order": 0,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "cml8v6pg40001vqc2mwoke5qv",
+    "name": "Alimento Balanceado Saosini super premiun",
+    "slug": "alimento-balanceado-saosini-super-premiun",
+    "price": "90",
+    "images": [
+      {
+        "id": "cml8v6pg40002vqc2cxgws93m",
+        "productId": "cml8v6pg40001vqc2mwoke5qv",
+        "url": "https://res.cloudinary.com/dpuyoreeb/image/upload/v1770259821/saosini-products/wjjueyxjtv0le5mmcqbv.png",
+        "altText": "",
+        "order": 0,
+        "isPrimary": true
+      }
+    ]
+  }
+]

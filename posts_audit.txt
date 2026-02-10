@@ -1,0 +1,20 @@
+=== BLOG POSTS AUDIT ===
+
+[#1] Created: 2026-02-09T16:43:30.721Z
+Title: Cómo empezar una crianza de cuyes: Guía Completa
+Slug:  como-empezar-crianza-cuyes
+ID:    cmlfeiiw20004vy0brulhr85g
+Image: https://res.cloudinary.com/dpuyoreeb/image/upload/v1770689747/saosini-blog/oiinlxunwwwgidu0thxu.jpg
+-----------------------------------
+[#2] Created: 2026-02-09T16:43:31.090Z
+Title: Control de Ectoparásitos en Cuyes
+Slug:  control-ectoparasitos-cuyes
+ID:    cmlfeij6a0006vy0b1n3c4z2n
+Image: https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=800
+-----------------------------------
+[#3] Created: 2026-02-09T20:06:16.346Z
+Title: Alimentación de cuyes en zonas de altura: El método de Granja Saosini
+Slug:  alimentacion-de-cuyes-en-zonas-de-altura-el-metodo-de-granja-saosini
+ID:    cmlflr9y2000gvy0b8eh61va5
+Image: https://res.cloudinary.com/dpuyoreeb/image/upload/v1770687254/saosini-blog/jmobuxvzmsgwrsrqaeaj.jpg
+-----------------------------------

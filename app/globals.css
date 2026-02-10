@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafaf9;
+  --background: #F2F2F2;
   --foreground: #1c1917;
   --radius: 0.75rem;
 
   /* Tailwind 4 uses CSS variables for theme configuration */
-  --color-primary: #7c2d12;
-  --color-primary-light: #9a3412;
-  --color-primary-dark: #431407;
+  --color-primary: #02733E;
+  --color-primary-light: #038C4D;
+  --color-primary-dark: #025939;
 
-  --color-secondary: #166534;
-  --color-secondary-light: #15803d;
-  --color-secondary-dark: #064e3b;
+  --color-secondary: #A67D03;
+  --color-secondary-light: #F2E1AC;
+  --color-secondary-dark: #806000;
 
-  --color-accent: #f59e0b;
-  --color-accent-light: #fbbf24;
-  --color-accent-dark: #b45309;
+  --color-accent: #02733E;
+  --color-accent-light: #038C4D;
+  --color-accent-dark: #025939;
 
   --font-sans: var(--font-outfit), ui-sans-serif, system-ui;
   --font-display: var(--font-plus-jakarta), ui-sans-serif, system-ui;
@@ -65,7 +65,7 @@ body {
 }
 
 .glass {
-  @apply bg-white/70 backdrop-blur-md border border-white/20 dark:bg-neutral-900/70 dark:border-neutral-800/20;
+  @apply bg-white/95 backdrop-blur-lg border-b border-neutral-200 shadow-sm sticky top-0 z-50;
 }
 
 .btn-primary {
@@ -91,4 +91,62 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-neutral-400 dark:bg-neutral-600;
+}
+
+/* Blog Content Custom Styles */
+.blog-content ul li {
+  padding-left: 1.5rem;
+}
+
+.blog-content ul li::marker {
+  content: '▸ ';
+  color: #10b981;
+  font-size: 1.25rem;
+}
+
+.blog-content ol {
+  counter-reset: item;
+  list-style: none;
+}
+
+.blog-content ol>li {
+  counter-increment: item;
+  padding-left: 3rem;
+  position: relative;
+}
+
+.blog-content ol>li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.blog-content p:has(strong:only-child) {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-left: 4px solid #10b981;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  margin: 2rem 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.blog-content iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 1rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  margin: 3rem 0;
+  border: none;
 }
