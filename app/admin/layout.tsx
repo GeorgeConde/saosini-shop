@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
     LayoutDashboard,
     Package,
@@ -12,7 +13,8 @@ import {
     Settings,
     LogOut,
     ChevronRight,
-    Wheat
+    Wheat,
+    ImageIcon
 } from 'lucide-react';
 
 export default function AdminLayout({
@@ -29,6 +31,7 @@ export default function AdminLayout({
         { name: 'Pedidos', icon: <ShoppingCart className="w-5 h-5" />, href: '/admin/pedidos' },
         { name: 'Clientes', icon: <Users className="w-5 h-5" />, href: '/admin/clientes' },
         { name: 'Blog', icon: <FileText className="w-5 h-5" />, href: '/admin/blog' },
+        { name: 'Galería', icon: <ImageIcon className="w-5 h-5" />, href: '/admin/gallery' },
     ];
 
     return (
@@ -72,8 +75,10 @@ export default function AdminLayout({
                         <Settings className="w-5 h-5" />
                         <span>Configuración</span>
                     </button>
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all text-sm text-neutral-500">
-                        <LogOut className="w-5 h-5" />
+                    <button
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all text-sm text-neutral-500"
+                    >                        <LogOut className="w-5 h-5" />
                         <span>Cerrar Sesión</span>
                     </button>
                 </div>

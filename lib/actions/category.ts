@@ -2,8 +2,12 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth";
 
 export async function createCategory(formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
@@ -36,6 +40,9 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function updateCategory(id: string, formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
@@ -67,6 +74,9 @@ export async function updateCategory(id: string, formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         await prisma.category.delete({
             where: { id }

@@ -10,6 +10,7 @@ interface Category {
     name: string;
     slug: string;
     description: string | null;
+    image: string | null;
     _count: {
         products: number;
     };

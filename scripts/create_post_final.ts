@@ -28,8 +28,7 @@ async function main() {
                 excerpt: 'Guía completa sobre selección y empadre.',
                 categoryId: category.id,
                 authorId: user.id,
-                published: true,
-                status: 'PUBLISHED', // Try string literal
+                status: 'PUBLISHED' as const, // Cast to const
                 publishedAt: new Date(),
                 featuredImage: 'https://images.unsplash.com/photo-1589923188900-85dae5233271?auto=format&fit=crop&q=80'
             }

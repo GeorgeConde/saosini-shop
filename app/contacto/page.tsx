@@ -1,6 +1,16 @@
-import { Mail, Phone, MapPin, Youtube, Facebook, Instagram } from "lucide-react";
+"use client";
+
+import { Mail, Phone, MapPin, Youtube, Facebook } from "lucide-react";
+import { useState } from "react";
 
 export default function ContactPage() {
+    const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const text = `Hola, soy ${formData.name}.\n${formData.email ? `Email: ${formData.email}\n` : ''}${formData.phone ? `Tel: ${formData.phone}\n` : ''}\n${formData.message}`;
+        window.open(`https://wa.me/51926069493?text=${encodeURIComponent(text)}`, '_blank');
+    };
     return (
         <div className="bg-neutral-50 min-h-screen py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,7 +63,7 @@ export default function ContactPage() {
                         <section>
                             <h3 className="text-2xl font-bold text-neutral-900 mb-6">Síguenos en Redes</h3>
                             <p className="text-neutral-600 mb-6">
-                                Únete a nuestra comunidad en **Agroaventuras Saosini** para consejos de crianza y más.
+                                Únete a nuestra comunidad en <strong>Agroaventuras Saosini</strong> para consejos de crianza y más.
                             </p>
                             <div className="flex space-x-4">
                                 <a
@@ -81,24 +91,24 @@ export default function ContactPage() {
                     {/* Contact Form Details */}
                     <div className="bg-white p-8 rounded-3xl shadow-lg border border-neutral-100">
                         <h3 className="text-2xl font-bold text-neutral-900 mb-6">Envíanos un mensaje</h3>
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-700 mb-2">Nombre</label>
-                                    <input type="text" className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="Tu nombre" />
+                                    <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="Tu nombre" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-700 mb-2">Teléfono</label>
-                                    <input type="tel" className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="+51..." />
+                                    <input type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="+51..." />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 mb-2">Correo Electrónico</label>
-                                <input type="email" className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="ejemplo@correo.com" />
+                                <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="ejemplo@correo.com" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 mb-2">Mensaje</label>
-                                <textarea rows={4} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="¿En qué podemos ayudarte?"></textarea>
+                                <textarea rows={4} required value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary outline-none transition" placeholder="¿En qué podemos ayudarte?"></textarea>
                             </div>
                             <button type="submit" className="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition shadow-xl shadow-primary/20">
                                 Enviar Mensaje

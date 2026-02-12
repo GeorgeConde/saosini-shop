@@ -24,7 +24,6 @@ async function main() {
                 excerpt: 'Debug excerpt',
                 categoryId: category.id,
                 authorId: user.id,
-                published: true, // Boolean
                 status: 'PUBLISHED', // Enum string
                 publishedAt: new Date(),
             }

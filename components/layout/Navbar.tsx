@@ -134,7 +134,7 @@ export default function Navbar() {
                         {/* Actions */}
                         <div className="flex items-center space-x-4">
                             <CartButton onClick={() => setIsCartOpen(true)} />
-                            {session ? (
+                            {session && (
                                 <div className="flex items-center space-x-2">
                                     <Link href="/admin" className="p-2 text-neutral-700 hover:text-primary transition-colors">
                                         <Settings className="w-5 h-5" />
@@ -143,10 +143,6 @@ export default function Navbar() {
                                         <LogOut className="w-5 h-5" />
                                     </button>
                                 </div>
-                            ) : (
-                                <Link href="/login" className="p-2 text-neutral-700 hover:text-primary transition-colors">
-                                    <User className="w-6 h-6" />
-                                </Link>
                             )}
                             <div className="md:hidden flex items-center">
                                 <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-neutral-700 hover:text-primary">

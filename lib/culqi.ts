@@ -18,7 +18,7 @@ export const createCharge = async (
                 email,
                 source_id: token,
                 capture: true,
-                description: 'Compra en Saosini Shop',
+                description: 'Compra en Granja Saosini',
                 antifraud_details: {
                     // Optional: Add antifraud data if needed
                 }

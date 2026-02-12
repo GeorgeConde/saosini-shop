@@ -23,7 +23,7 @@ export const OrderConfirmationEmail: React.FC<Readonly<OrderConfirmationEmailPro
         border: '1px solid #eee'
     }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <h1 style={{ color: '#e24a4a', margin: '0' }}>Saosini Shop</h1>
+            <h1 style={{ color: '#e24a4a', margin: '0' }}>Granja Saosini</h1>
             <p style={{ color: '#666' }}>¡Gracias por tu compra!</p>
         </div>
 
@@ -61,7 +61,7 @@ export const OrderConfirmationEmail: React.FC<Readonly<OrderConfirmationEmailPro
         </div>
 
         <div style={{ marginTop: '30px', textAlign: 'center', color: '#999', fontSize: '12px' }}>
-            <p>Saosini Shop - Excelencia Genética</p>
+            <p>Granja Saosini - Excelencia Genética</p>
             <p>Si tienes alguna duda, contáctanos por WhatsApp.</p>
         </div>
     </div>

@@ -16,28 +16,29 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Saosini - Especialistas en el Mundo de los Cuyes",
-    template: "%s | Saosini"
+    default: "Granja Saosini - Especialistas en Crianza de Cuyes",
+    template: "%s | Granja Saosini"
   },
-  description: "Especialistas en la venta de cuyes reproductores de alta calidad genética, alimento balanceado, accesorios y medicamentos. Envíos en todo el Perú.",
-  keywords: ["cuyes reproductores", "granja de cuyes", "alimento para cuyes", "cuyes peru", "genética de cuyes"],
+  description: "Granja Saosini: Venta de cuyes reproductores de alta calidad genética, alimento balanceado, accesorios y medicamentos. Envíos a todo el Perú.",
+  keywords: ["cuyes reproductores", "granja de cuyes", "alimento para cuyes", "cuyes peru", "genética de cuyes", "granja saosini", "crianza de cuyes"],
   openGraph: {
-    title: "Saosini - Especialistas en el Mundo de los Cuyes",
+    title: "Granja Saosini - Especialistas en Crianza de Cuyes",
     description: "Venta de reproductores y suministros para la crianza técnica de cuyes.",
     url: "https://saosinicuyes.com",
-    siteName: "Saosini",
+    siteName: "Granja Saosini",
     locale: "es_PE",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Saosini",
+    title: "Granja Saosini",
     description: "Calidad premium en reproductores y suministros para cuyes.",
   }
 };
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import SocialSidebar from "@/components/layout/SocialSidebar";
 
 export default function RootLayout({
   children,
@@ -54,6 +55,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <WhatsAppButton />
+          <SocialSidebar />
         </AuthProvider>
       </body>
     </html>

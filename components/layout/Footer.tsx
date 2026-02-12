@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Mail, Phone, MapPin, Youtube } from "lucide-react";
+import { Facebook, Mail, Phone, MapPin, Youtube } from "lucide-react";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -17,7 +17,7 @@ export default function Footer() {
                                 </svg>
                             </div>
                             <span className="font-display font-bold text-xl tracking-tighter uppercase">
-                                SAOSINI<span className="text-secondary ml-1">Shop</span>
+                                GRANJA SAOSINI
                             </span>
                         </Link>
                         <p className="text-sm leading-relaxed italic">
@@ -41,13 +41,6 @@ export default function Footer() {
                                 title="Saosini Cuyes en Facebook"
                             >
                                 <Facebook className="w-5 h-5" />
-                            </a>
-                            <a
-                                href="#"
-                                className="hover:text-pink-500 transition-colors"
-                                title="Instagram"
-                            >
-                                <Instagram className="w-5 h-5" />
                             </a>
                         </div>
                     </div>
@@ -96,7 +89,7 @@ export default function Footer() {
 
                 <div className="border-t border-neutral-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <p className="text-xs">
-                        © {currentYear} SAOSINI Shop. Todos los derechos reservados.
+                        © {currentYear} Granja Saosini. Todos los derechos reservados.
                     </p>
                     <div className="flex items-center space-x-6">
                         <span className="text-xs text-neutral-500">Pagos Seguros con:</span>

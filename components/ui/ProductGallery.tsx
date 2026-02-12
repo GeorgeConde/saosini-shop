@@ -50,7 +50,7 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                                 {img.url.includes('cloudinary.com') || !img.url.startsWith('http') ? (
                                     <CldImage
                                         src={img.url}
-                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Saosini Shop`}
+                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Granja Saosini`}
                                         width={100}
                                         height={125}
                                         crop="fill"
@@ -59,7 +59,7 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                                 ) : (
                                     <Image
                                         src={img.url}
-                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Saosini Shop`}
+                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Granja Saosini`}
                                         width={100}
                                         height={125}
                                         className="object-contain h-full w-full bg-neutral-50"
@@ -83,7 +83,7 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                     {selectedImage.includes('cloudinary.com') || !selectedImage.startsWith('http') ? (
                         <CldImage
                             src={selectedImage}
-                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Saosini Shop`}
+                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Granja Saosini`}
                             width={800}
                             height={1000}
                             crop="limit"
@@ -96,7 +96,7 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                     ) : (
                         <Image
                             src={selectedImage}
-                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Saosini Shop`}
+                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Granja Saosini`}
                             fill
                             className={`object-contain w-full h-full transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
                             style={isHovering ? {

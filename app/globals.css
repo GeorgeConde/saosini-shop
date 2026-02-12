@@ -150,3 +150,71 @@ body {
   margin: 3rem 0;
   border: none;
 }
+
+/* ===== Gallery Marquee Animations ===== */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes marquee-scroll-reverse {
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes gallery-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gallery-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gallery-marquee-paused {
+  animation-play-state: paused !important;
+}
+
+.gallery-marquee-item {
+  will-change: transform, opacity;
+}
+
+.gallery-marquee-track {
+  will-change: auto;
+}
+
+/* ===== Gradient Text Animation ===== */
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+
+  50% {
+    background-position: 100% center;
+  }
+}

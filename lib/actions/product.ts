@@ -3,20 +3,41 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { ProductType } from "@prisma/client";
+import { requireAdmin } from "@/lib/auth";
+import { createProductSchema } from "@/lib/validations";
 
 export async function createProduct(formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
+    // Safely parse images JSON
+    let parsedImages: any[] = [];
     try {
-        const name = formData.get("name") as string;
-        const description = formData.get("description") as string;
-        const price = parseFloat(formData.get("price") as string);
-        const stockQuantity = parseInt(formData.get("stockQuantity") as string);
-        const categoryId = formData.get("categoryId") as string;
-        const type = formData.get("type") as ProductType;
         const imagesJson = formData.get("images") as string;
-        const images: { url: string, altText?: string | null }[] = imagesJson ? JSON.parse(imagesJson) : [];
-        const status = formData.get("status") as string || "active";
+        parsedImages = imagesJson ? JSON.parse(imagesJson) : [];
+    } catch {
+        return { success: false, error: "Formato de imágenes inválido" };
+    }
+
+    const rawData = {
+        name: formData.get("name") as string,
+        description: formData.get("description") as string,
+        price: parseFloat(formData.get("price") as string),
+        stockQuantity: parseInt(formData.get("stockQuantity") as string),
+        categoryId: formData.get("categoryId") as string,
+        type: formData.get("type") as string,
+        status: (formData.get("status") as string) || "active",
+        images: parsedImages,
+    };
+
+    const parsed = createProductSchema.safeParse(rawData);
+    if (!parsed.success) {
+        return { success: false, error: parsed.error.issues[0]?.message || "Datos inválidos" };
+    }
+    const { name, description, price, stockQuantity, categoryId, type, status, images } = parsed.data;
 
 
+    try {
         // Generar slug simple
         const slug = name.toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -40,7 +61,6 @@ export async function createProduct(formData: FormData) {
                         isPrimary: index === 0
                     }))
                 }
-
             }
         });
 
@@ -60,6 +80,9 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(id: string, formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
@@ -118,6 +141,9 @@ export async function updateProduct(id: string, formData: FormData) {
 
 
 export async function deleteProduct(id: string) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         await prisma.product.delete({
             where: { id }

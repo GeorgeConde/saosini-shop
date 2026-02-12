@@ -3,6 +3,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { rateLimit } from "@/lib/rate-limit";
+
+// Rate limit: 5 login attempts per email per 15 minutes
+const LOGIN_MAX_ATTEMPTS = 5;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -18,12 +23,23 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Credenciales inválidas");
                 }
 
+                // Rate limiting check
+                const { allowed, retryAfterMs } = rateLimit(
+                    `login:${credentials.email.toLowerCase()}`,
+                    LOGIN_MAX_ATTEMPTS,
+                    LOGIN_WINDOW_MS
+                );
+                if (!allowed) {
+                    const retryMinutes = Math.ceil(retryAfterMs / 60000);
+                    throw new Error(`Demasiados intentos. Intenta de nuevo en ${retryMinutes} minuto(s).`);
+                }
+
                 const user = await prisma.user.findUnique({
                     where: { email: credentials.email }
                 });
 
                 if (!user || !user.password) {
-                    throw new Error("Usuario no encontrado");
+                    throw new Error("Credenciales inválidas");
                 }
 
                 const isPasswordCorrect = await bcrypt.compare(
@@ -32,7 +48,7 @@ export const authOptions: NextAuthOptions = {
                 );
 
                 if (!isPasswordCorrect) {
-                    throw new Error("Contraseña incorrecta");
+                    throw new Error("Credenciales inválidas");
                 }
 
                 return user;

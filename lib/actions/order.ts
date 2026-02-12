@@ -2,25 +2,35 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+import { Prisma, OrderStatus, PaymentStatus } from "@prisma/client";
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "@/lib/mail";
 import { getShippingCost } from "./shipping";
+import { requireAdmin } from "@/lib/auth";
+import { createOrderSchema, CreateOrderInput } from "@/lib/validations";
+import { rateLimit } from "@/lib/rate-limit";
 
-export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+// Rate limit: 10 orders per email per hour
+const ORDER_MAX_PER_HOUR = 10;
+const ORDER_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
-interface CreateOrderInput {
-    customerName: string;
-    customerEmail: string;
-    customerPhone: string;
-    shippingAddress: any;
-    items: {
-        id: string; // product id
-        quantity: number;
-    }[];
-    total: number; // Client side total, for verification
-}
+export async function createOrder(rawData: unknown) {
+    // Validate input with Zod
+    const parsed = createOrderSchema.safeParse(rawData);
+    if (!parsed.success) {
+        return { success: false, error: parsed.error.issues[0]?.message || "Datos inválidos" };
+    }
+    const data = parsed.data;
 
-export async function createOrder(data: CreateOrderInput & { paymentToken?: string }) {
+    // Rate limiting by customer email
+    const { allowed } = rateLimit(
+        `order:${data.customerEmail.toLowerCase()}`,
+        ORDER_MAX_PER_HOUR,
+        ORDER_WINDOW_MS
+    );
+    if (!allowed) {
+        return { success: false, error: "Has realizado demasiados pedidos. Intenta de nuevo más tarde." };
+    }
+
     try {
         const { items, customerName, customerEmail, customerPhone, shippingAddress, paymentToken } = data;
 
@@ -172,6 +182,9 @@ export async function createOrder(data: CreateOrderInput & { paymentToken?: stri
 }
 
 export async function getOrders(limit = 10, offset = 0) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const orders = await prisma.order.findMany({
             take: limit,
@@ -200,6 +213,9 @@ export async function getOrders(limit = 10, offset = 0) {
 }
 
 export async function getOrderById(id: string) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const order = await prisma.order.findUnique({
             where: { id },
@@ -245,6 +261,9 @@ export async function getOrderById(id: string) {
 
 
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         await prisma.order.update({
             where: { id: orderId },
@@ -259,7 +278,10 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     }
 }
 
-export async function updatePaymentStatus(orderId: string, status: any) {
+export async function updatePaymentStatus(orderId: string, status: PaymentStatus) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         await prisma.order.update({
             where: { id: orderId },
@@ -275,6 +297,9 @@ export async function updatePaymentStatus(orderId: string, status: any) {
 }
 
 export async function addTrackingNumber(orderId: string, trackingNumber: string) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         await prisma.order.update({
             where: { id: orderId },

@@ -18,7 +18,7 @@ async function main() {
         const post = await prisma.blogPost.upsert({
             where: { slug: finalSlug },
             update: {
-                status: 'PUBLISHED',
+                status: 'PUBLISHED' as const,
                 publishedAt: new Date(),
                 categoryId: category.id,
                 authorId: user.id

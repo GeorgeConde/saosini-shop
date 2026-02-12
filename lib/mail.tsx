@@ -13,9 +13,9 @@ export const sendOrderConfirmationEmail = async (
 ) => {
     try {
         const { data, error } = await resend.emails.send({
-            from: 'Saosini Shop <onboarding@resend.dev>',
+            from: 'Granja Saosini <onboarding@resend.dev>',
             to: [email],
-            subject: `Confirmación de pedido #${orderNumber} - Saosini Shop`,
+            subject: `Confirmación de pedido #${orderNumber} - Granja Saosini`,
             react: (
                 <OrderConfirmationEmail
                     orderNumber={orderNumber}
@@ -45,9 +45,9 @@ export const sendAdminOrderNotification = async (
 ) => {
     try {
         const { data, error } = await resend.emails.send({
-            from: 'Saosini Shop <onboarding@resend.dev>',
+            from: 'Granja Saosini <onboarding@resend.dev>',
             to: ['gacp_@hotmail.com'],
-            subject: `NUEVO PEDIDO #${orderNumber} - Saosini Shop`,
+            subject: `NUEVO PEDIDO #${orderNumber} - Granja Saosini`,
             html: `
         <h1>Nuevo pedido recibido</h1>
         <p><strong>Pedido:</strong> #${orderNumber}</p>

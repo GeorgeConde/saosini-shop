@@ -3,15 +3,43 @@ import StatsCards from './StatsCards';
 import SalesChart from './SalesChart';
 import TopProducts from './TopProducts';
 import LowStockAlert from './LowStockAlert';
+import DateRangeFilter from '@/components/admin/DateRangeFilter';
 import Link from 'next/link';
-import { ChevronRight, Clock, DollarSign, ShoppingBag, Package, TrendingUp } from 'lucide-react';
+import { ChevronRight, DollarSign, ShoppingBag, Package, TrendingUp } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminDashboard() {
-    // Cargar datos de la base de datos
+interface AdminDashboardProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function AdminDashboard({ searchParams }: AdminDashboardProps) {
+
+    const resolvedSearchParams = await searchParams;
+    const from = typeof resolvedSearchParams.from === 'string' ? resolvedSearchParams.from : undefined;
+    const to = typeof resolvedSearchParams.to === 'string' ? resolvedSearchParams.to : undefined;
+
+    // Defines date range
+    const endDate = to ? new Date(to) : new Date();
+    endDate.setHours(23, 59, 59, 999);
+
+    const startDate = from ? new Date(from) : new Date();
+    if (!from) {
+        startDate.setDate(endDate.getDate() - 30); // Default to last 30 days
+    }
+    startDate.setHours(0, 0, 0, 0);
+
+    const dateFilter = {
+        createdAt: {
+            gte: startDate,
+            lte: endDate
+        }
+    };
+
+    // Load data from database with filters
     const [orders, products, orderItems] = await Promise.all([
         prisma.order.findMany({
+            where: dateFilter,
             include: {
                 items: true
             },
@@ -27,6 +55,9 @@ export default async function AdminDashboard() {
             }
         }),
         prisma.orderItem.findMany({
+            where: {
+                order: dateFilter
+            },
             include: {
                 product: {
                     include: {
@@ -40,33 +71,37 @@ export default async function AdminDashboard() {
         })
     ]);
 
-    // Calcular métricas
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Calculate metrics
+    const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total), 0);
+    const totalOrders = orders.length;
+    const pendingOrders = orders.filter(o => o.status === 'PENDING').length;
+    const activeProducts = products.filter(p => p.status === 'active').length;
 
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    // Previous period for comparison (same length as current period)
+    const periodLength = endDate.getTime() - startDate.getTime();
+    const prevEndDate = new Date(startDate.getTime() - 1);
+    const prevStartDate = new Date(prevEndDate.getTime() - periodLength);
 
-    const todayOrders = orders.filter(o => new Date(o.createdAt) >= today);
-    const yesterdayOrders = orders.filter(o => {
-        const date = new Date(o.createdAt);
-        return date >= yesterday && date < today;
+    const prevOrders = await prisma.order.findMany({
+        where: {
+            createdAt: {
+                gte: prevStartDate,
+                lte: prevEndDate
+            }
+        }
     });
 
-    const todayTotal = todayOrders.reduce((sum, o) => sum + Number(o.total), 0);
-    const yesterdayTotal = yesterdayOrders.reduce((sum, o) => sum + Number(o.total), 0);
-    const salesChange = yesterdayTotal > 0
-        ? (((todayTotal - yesterdayTotal) / yesterdayTotal) * 100).toFixed(1)
-        : '0.0';
+    const prevRevenue = prevOrders.reduce((sum, o) => sum + Number(o.total), 0);
+    const revenueChange = prevRevenue > 0
+        ? (((totalRevenue - prevRevenue) / prevRevenue) * 100).toFixed(1)
+        : '100';
 
-    const pendingOrders = orders.filter(o => o.status === 'PENDING').length;
-    const totalOrders = orders.length;
-    const ordersChange = '+8.2'; // Placeholder
+    const ordersChange = prevOrders.length > 0
+        ? (((totalOrders - prevOrders.length) / prevOrders.length) * 100).toFixed(1)
+        : '100';
 
-    const activeProducts = products.filter(p => p.status === 'active').length;
-    const productsChange = '+5.3'; // Placeholder
 
-    // Productos con stock bajo (< 10 unidades)
+    // Low stock products (< 10 units)
     const lowStockProducts = products
         .filter(p => p.stockQuantity < 10 && p.status === 'active')
         .map(p => ({
@@ -77,7 +112,7 @@ export default async function AdminDashboard() {
         }))
         .sort((a, b) => a.stockQuantity - b.stockQuantity);
 
-    // Top 5 productos más vendidos
+    // Top 5 best selling products
     const productSales = orderItems.reduce((acc, item) => {
         if (!acc[item.productId]) {
             acc[item.productId] = {
@@ -97,53 +132,53 @@ export default async function AdminDashboard() {
         .sort((a: any, b: any) => b.quantitySold - a.quantitySold)
         .slice(0, 5);
 
-    // Datos para gráfico de ventas (últimos 30 días)
+    // Data for sales chart
     const salesData = [];
-    for (let i = 29; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        date.setHours(0, 0, 0, 0);
+    const currentDate = new Date(startDate);
 
-        const nextDay = new Date(date);
+    while (currentDate <= endDate) {
+        const nextDay = new Date(currentDate);
         nextDay.setDate(nextDay.getDate() + 1);
 
         const dayOrders = orders.filter(o => {
             const orderDate = new Date(o.createdAt);
-            return orderDate >= date && orderDate < nextDay;
+            return orderDate >= currentDate && orderDate < nextDay;
         });
 
         const dayTotal = dayOrders.reduce((sum, o) => sum + Number(o.total), 0);
 
         salesData.push({
-            date: date.toLocaleDateString('es-PE', { day: 'numeric', month: 'short' }),
+            date: currentDate.toLocaleDateString('es-PE', { day: 'numeric', month: 'short' }),
             sales: dayTotal
         });
+
+        currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    // Pedidos recientes (últimos 4)
+    // Recent orders (last 4)
     const recentOrders = orders.slice(0, 4);
 
     const stats = [
         {
-            name: 'Ventas del Día',
-            value: `S/ ${todayTotal.toFixed(2)}`,
-            change: `${salesChange}%`,
-            trend: Number(salesChange) >= 0 ? 'up' as const : 'down' as const,
+            name: 'Ventas Totales',
+            value: `S/ ${totalRevenue.toFixed(2)}`,
+            change: `${revenueChange}%`,
+            trend: Number(revenueChange) >= 0 ? 'up' as const : 'down' as const,
             icon: <DollarSign className="w-6 h-6" />,
             color: 'bg-green-500'
         },
         {
-            name: 'Pedidos Totales',
+            name: 'Pedidos',
             value: totalOrders.toString(),
-            change: ordersChange,
-            trend: 'up' as const,
+            change: `${ordersChange}%`,
+            trend: Number(ordersChange) >= 0 ? 'up' as const : 'down' as const,
             icon: <ShoppingBag className="w-6 h-6" />,
             color: 'bg-blue-500'
         },
         {
             name: 'Productos Activos',
             value: activeProducts.toString(),
-            change: productsChange,
+            change: '+0.0%', // Product change not calculated over period for now
             trend: 'up' as const,
             icon: <Package className="w-6 h-6" />,
             color: 'bg-purple-500'
@@ -159,11 +194,14 @@ export default async function AdminDashboard() {
     ];
 
     return (
-        <div className="space-y-10">
-            {/* Welcome Header */}
-            <div>
-                <h1 className="text-3xl font-display font-bold text-neutral-900">Bienvenido de nuevo, Administrador</h1>
-                <p className="text-neutral-500 mt-1">Aquí tienes un resumen de lo que ha pasado en tu granja hoy.</p>
+        <div className="space-y-8">
+            {/* Header & Filter */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-display font-bold text-neutral-900">Panel de Control</h1>
+                    <p className="text-neutral-500 mt-1">Resumen de ventas y actividad reciente.</p>
+                </div>
+                <DateRangeFilter />
             </div>
 
             {/* Stats Cards */}
@@ -221,7 +259,7 @@ export default async function AdminDashboard() {
                                 {recentOrders.length === 0 && (
                                     <tr>
                                         <td colSpan={4} className="px-6 py-10 text-center text-neutral-500">
-                                            No hay pedidos recientes
+                                            No hay pedidos en este rango de fechas.
                                         </td>
                                     </tr>
                                 )}

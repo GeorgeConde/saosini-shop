@@ -91,9 +91,9 @@ export default function CheckoutPage() {
         if (window.Culqi) {
             window.Culqi.publicKey = process.env.NEXT_PUBLIC_CULQI_PUBLIC_KEY;
             window.Culqi.settings({
-                title: 'Saosini Shop',
+                title: 'Granja Saosini',
                 currency: 'PEN',
-                description: 'Compra en Saosini Shop',
+                description: 'Compra en Granja Saosini',
                 amount: Math.round(total * 100)
             });
             window.Culqi.options({
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
 
     const handleWhatsAppCheckout = () => {
         // Construct message
-        let message = `*¡Hola! Quiero realizar un pedido en Saosini Shop:*\n\n`;
+        let message = `*¡Hola! Quiero realizar un pedido en Granja Saosini:*\n\n`;
         items.forEach(item => {
             message += `• ${item.quantity}x ${item.name} - S/ ${(item.price * item.quantity).toFixed(2)}\n`;
         });
@@ -168,8 +168,30 @@ export default function CheckoutPage() {
         e.preventDefault();
 
         // Validation
-        if (!formData.email || !formData.firstName || !formData.address || !formData.department) {
-            alert("Por favor completa todos los campos requeridos");
+        if (!formData.firstName || !formData.lastName) {
+            alert("Por favor ingresa tu nombre completo");
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formData.email || !emailRegex.test(formData.email)) {
+            alert("Por favor ingresa un email válido");
+            return;
+        }
+
+        const phoneRegex = /^[\d\s\-+()]{6,20}$/;
+        if (!formData.phone || !phoneRegex.test(formData.phone)) {
+            alert("Por favor ingresa un teléfono válido (6-20 dígitos)");
+            return;
+        }
+
+        if (!formData.address || formData.address.length < 5) {
+            alert("Por favor ingresa una dirección válida (mínimo 5 caracteres)");
+            return;
+        }
+
+        if (!formData.department) {
+            alert("Por favor selecciona un departamento");
             return;
         }
 

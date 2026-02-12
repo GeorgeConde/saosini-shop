@@ -37,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {primaryImage.includes('cloudinary.com') || !primaryImage.startsWith('http') ? (
                     <CldImage
                         src={primaryImage}
-                        alt={`${product.name} | Saosini Shop`}
+                        alt={`${product.name} | Granja Saosini`}
                         width={400}
                         height={400}
                         crop="fill"
@@ -47,7 +47,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ) : (
                     <Image
                         src={primaryImage}
-                        alt={`${product.name} | Saosini Shop`}
+                        alt={`${product.name} | Granja Saosini`}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />

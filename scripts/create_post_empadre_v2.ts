@@ -49,8 +49,7 @@ async function main() {
         slug: 'seleccion-y-empadre-como-mejorar-la-genetica-de-tu-granja', // SEO friendly
         content: '<p>Contenido cargado desde componente personalizado...</p>',
         excerpt: 'El éxito de una granja no depende solo de cuántos cuyes nacen, sino de la calidad de esos animales. Aprende a seleccionar los mejores reproductores.',
-        published: true,
-        status: 'PUBLISHED', // Using string literal if enum import fails, or prisma will handle enum mapping
+        status: 'PUBLISHED' as const, // Cast to const to satisfy enum type if using string
         publishedAt: new Date(),
         featuredImage: 'https://images.unsplash.com/photo-1589923188900-85dae5233271?auto=format&fit=crop&q=80',
         categoryId: category.id,

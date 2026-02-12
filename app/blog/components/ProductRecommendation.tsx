@@ -45,7 +45,7 @@ export default function ProductRecommendation({ name, description, slug, image, 
                         S/ {price}
                     </span>
                     <Link
-                        href={`/productos/${slug}`}
+                        href={`/catalogo/${slug}`}
                         className="inline-flex items-center gap-2 bg-neutral-900 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-primary transition-colors text-sm"
                     >
                         <ShoppingBag className="w-4 h-4" />

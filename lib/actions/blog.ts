@@ -3,10 +3,14 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { PostStatus } from "@prisma/client";
+import { requireAdmin } from "@/lib/auth";
 
 // ===== BLOG POSTS =====
 
 export async function createPost(formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const title = formData.get("title") as string;
         const excerpt = formData.get("excerpt") as string;
@@ -52,6 +56,9 @@ export async function createPost(formData: FormData) {
 }
 
 export async function updatePost(id: string, formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const title = formData.get("title") as string;
         const excerpt = formData.get("excerpt") as string;
@@ -104,6 +111,9 @@ export async function updatePost(id: string, formData: FormData) {
 }
 
 export async function deletePost(id: string) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         await prisma.blogPost.delete({
             where: { id }
@@ -119,6 +129,9 @@ export async function deletePost(id: string) {
 }
 
 export async function publishPost(id: string) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const post = await prisma.blogPost.update({
             where: { id },
@@ -140,6 +153,9 @@ export async function publishPost(id: string) {
 // ===== BLOG CATEGORIES =====
 
 export async function createBlogCategory(formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
@@ -174,6 +190,9 @@ export async function createBlogCategory(formData: FormData) {
 }
 
 export async function updateBlogCategory(id: string, formData: FormData) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         const name = formData.get("name") as string;
         const description = formData.get("description") as string;
@@ -209,6 +228,9 @@ export async function updateBlogCategory(id: string, formData: FormData) {
 }
 
 export async function deleteBlogCategory(id: string) {
+    const auth = await requireAdmin();
+    if (!auth.authorized) return { success: false, error: auth.error };
+
     try {
         // Verificar que no tenga posts
         const category = await prisma.blogCategory.findUnique({
@@ -285,7 +307,6 @@ export async function getPostBySlug(slug: string) {
             return { success: false, error: "Artículo no encontrado" };
         }
 
-        return { success: true, post };
         return { success: true, post };
     } catch (error) {
         console.error("Error fetching post by slug:", error);
