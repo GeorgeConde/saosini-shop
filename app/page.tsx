@@ -6,6 +6,7 @@ import { getPublishedPosts } from "@/lib/actions/blog";
 import BlogCard from "@/components/blog/BlogCard";
 import DynamicGallery from "@/components/home/DynamicGallery";
 import HeroSlider from "@/components/home/HeroSlider";
+import ProductCarousel from "@/components/home/ProductCarousel";
 
 // Custom Icons - Using User Images
 // Images should be placed in public/icons/ directory
@@ -13,98 +14,57 @@ import HeroSlider from "@/components/home/HeroSlider";
 
 export default async function Home() {
   const { posts: latestPosts = [] } = await getPublishedPosts(2);
-  const categories = [
+  const carouselItems = [
     {
-      name: "Reproductores",
-      description: "Genética superior",
+      image: "/icons/cuy.png",
+      imageAlt: "Cuyes reproductores de genética superior",
+      title: "Reproductores",
+      subtitle: "Genética superior seleccionada para máxima productividad",
+      tags: ["Alta Prolificidad", "Precocidad", "Genética Mejorada", "Sanidad Certificada"],
       href: "/catalogo?category=Reproductores",
-      icon: "/icons/cuy.png",
-      color: "bg-primary"
+      ctaLabel: "Ver Reproductores",
     },
     {
-      name: "Alimento Balanceado",
-      description: "Nutrición de calidad",
+      image: "/icons/saco.png",
+      imageAlt: "Alimento balanceado para cuyes",
+      title: "Alimento Balanceado",
+      subtitle: "Nutrición científica para cada etapa de crecimiento",
+      tags: ["Crecimiento", "Engorde", "Reproducción", "Vitaminas"],
       href: "/catalogo?category=Alimento",
-      icon: "/icons/saco.png",
-      color: "bg-primary"
+      ctaLabel: "Ver Alimentos",
     },
     {
-      name: "Accesorios",
-      description: "Confort total",
+      image: "/icons/bebedero.png",
+      imageAlt: "Accesorios y equipamiento para cuyes",
+      title: "Accesorios",
+      subtitle: "Equipamiento técnico diseñado para bienestar y eficiencia",
+      tags: ["Bebederos", "Comederos", "Jaulas", "Confort"],
       href: "/catalogo?category=Accesorios",
-      icon: "/icons/bebedero.png",
-      color: "bg-primary"
+      ctaLabel: "Ver Accesorios",
     },
     {
-      name: "Productos",
-      description: "Insumos varios",
+      image: "/icons/productos.png",
+      imageAlt: "Medicamentos y suplementos para cuyes",
+      title: "Medicamentos",
+      subtitle: "Sanidad proactiva para mantener tu crianza sana",
+      tags: ["Antibióticos", "Vitaminas", "Desparasitantes", "Suplementos"],
       href: "/catalogo?category=Medicamentos",
-      icon: "/icons/productos.png",
-      color: "bg-primary"
-    }
+      ctaLabel: "Ver Productos",
+    },
   ];
-
 
 
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      {/* Hero Section */}
       <HeroSlider />
 
-      {/* Categories Grid (Circular Layout) */}
-      {/* Categories Grid (Modern Cards) */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between mb-12 space-y-4 md:space-y-0 text-center md:text-left">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-neutral-900 uppercase tracking-tight">Líneas de Productos</h2>
-              <p className="text-neutral-600 mt-2">Todo lo que necesitas para una crianza exitosa</p>
-            </div>
-            <Link href="/catalogo" className="text-primary font-bold flex items-center hover:underline group">
-              Explorar todo <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((cat, idx) => (
-              <Link
-                key={idx}
-                href={cat.href}
-                className="group relative bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-              >
-                {/* Decorative background element */}
-                <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full ${cat.color} opacity-10 group-hover:scale-150 transition-transform duration-500 ease-out`} />
-
-                <div className="relative z-10 flex flex-col h-full">
-                  <div className={`w-20 h-20 rounded-2xl ${cat.color} bg-opacity-10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <div className="relative w-14 h-14">
-                      <Image
-                        src={cat.icon as string}
-                        alt={cat.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  </div>
-
-                  <h3 className="text-xl font-bold text-neutral-900 mb-2 group-hover:text-primary transition-colors">
-                    {cat.name}
-                  </h3>
-
-                  <p className="text-neutral-500 text-sm mb-4 flex-grow">
-                    {cat.description}
-                  </p>
-
-                  <div className="flex items-center text-primary font-medium text-sm mt-auto opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                    Ver productos <ArrowRight className="ml-2 w-4 h-4" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Product Showcase Carousel */}
+      <ProductCarousel
+        items={carouselItems}
+        sectionTitle="Líneas de Productos"
+        sectionSubtitle="Diferentes líneas, diferentes soluciones. Encuentra lo que necesitas."
+      />
 
       {/* Dynamic Gallery Section */}
       <DynamicGallery />
@@ -112,16 +72,16 @@ export default async function Home() {
 
       {/* Featured info / About */}
       {/* Featured info / About (Redesigned) */}
-      <section className="py-32 bg-white relative overflow-hidden">
+      <section className="py-16 bg-white relative overflow-hidden">
         {/* Abstract Background Shapes */}
         <div className="absolute top-1/3 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -ml-20"></div>
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-3xl translate-y-1/2 translate-x-1/4"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
             {/* Visual Composition */}
-            <div className="relative h-[600px] w-full hidden lg:block">
+            <div className="relative h-[480px] w-full hidden lg:block">
               {/* Main Image */}
               <div className="absolute top-0 right-8 w-4/5 h-[85%] rounded-[2.5rem] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-all duration-500 ease-out z-10">
                 <Image
@@ -169,13 +129,13 @@ export default async function Home() {
             </div>
 
             {/* Content Side */}
-            <div className="space-y-10">
+            <div className="space-y-6">
               <div className="inline-flex items-center px-3 py-1 bg-amber-50 border border-amber-100 rounded-full mb-2">
                 <span className="w-2 h-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>
                 <span className="text-amber-800 text-xs font-bold uppercase tracking-widest">Liderazgo en el sector</span>
               </div>
 
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.1] text-neutral-900">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold leading-[1.1] text-neutral-900">
                 Comprometidos con el <br />
                 <span className="relative inline-block">
                   <span className="relative z-10">Éxito de tu Inversión</span>
@@ -187,7 +147,7 @@ export default async function Home() {
                 En Granja Saosini, no solo criamos cuyes; desarrollamos genética de vanguardia. Nuestros ejemplares son criados bajo rigurosos estándares de bioseguridad y nutrición para asegurar la máxima rentabilidad de tu negocio.
               </p>
 
-              <div className="space-y-6 pt-4">
+              <div className="space-y-4 pt-2">
                 {/* Feature 1 */}
                 <div className="group flex items-start space-x-5 p-4 rounded-2xl hover:bg-neutral-50 transition-colors duration-300">
                   <div className="bg-primary/10 p-3 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
@@ -211,7 +171,7 @@ export default async function Home() {
                 </div>
               </div>
 
-              <div className="pt-8 flex flex-col sm:flex-row gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <Link href="/nosotros" className="btn-secondary px-8 py-4 text-center">
                   Conoce nuestra historia
                 </Link>
@@ -226,7 +186,7 @@ export default async function Home() {
       </section>
 
       {/* Centro de Conocimiento — Futuristic */}
-      <section className="py-28 bg-neutral-950 relative overflow-hidden">
+      <section className="py-14 bg-neutral-950 relative overflow-hidden">
         {/* Animated ambient orbs */}
         <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-secondary/8 rounded-full blur-[120px] pointer-events-none" style={{ animationDelay: '2s', animationDuration: '4s' }} />
@@ -242,7 +202,7 @@ export default async function Home() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse mr-3" />
               <span className="text-primary-light text-xs font-bold uppercase tracking-[0.25em]">
@@ -270,7 +230,7 @@ export default async function Home() {
           </div>
 
           {/* CTA Button */}
-          <div className="mt-16 text-center">
+          <div className="mt-10 text-center">
             <Link
               href="/blog"
               className="group relative inline-flex items-center px-8 py-4 rounded-2xl font-bold text-white overflow-hidden transition-all duration-500 hover:scale-105"
@@ -289,13 +249,13 @@ export default async function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-neutral-900 text-white overflow-hidden relative">
+      <section className="py-14 bg-neutral-900 text-white overflow-hidden relative">
 
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <div className="inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 rounded-full mb-4">
               <Star className="w-4 h-4 text-secondary mr-2" fill="currentColor" />
               <span className="text-secondary text-sm font-bold uppercase tracking-wider">
@@ -343,13 +303,13 @@ export default async function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-primary to-primary-dark text-white relative overflow-hidden">
+      <section className="py-14 bg-gradient-to-br from-primary to-primary-dark text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-secondary rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 text-center space-y-8 relative z-10">
+        <div className="max-w-4xl mx-auto px-4 text-center space-y-5 relative z-10">
           <h2 className="text-4xl md:text-5xl font-display font-bold">¿Listo para empezar tu propia granja?</h2>
           <p className="text-white/90 text-lg sm:px-12">
             Contáctanos hoy mismo para una asesoría personalizada sobre los mejores reproductores para tu zona.
