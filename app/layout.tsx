@@ -29,11 +29,17 @@ export const metadata: Metadata = {
     locale: "es_PE",
     type: "website",
   },
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
+
   twitter: {
     card: "summary_large_image",
     title: "Granja Saosini",
     description: "Calidad premium en reproductores y suministros para cuyes.",
-  }
+  },
 };
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
