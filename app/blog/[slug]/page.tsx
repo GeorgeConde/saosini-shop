@@ -21,13 +21,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return { title: 'Artículo no encontrado' };
     }
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://saosinicuyes.com';
+    const canonicalUrl = `${appUrl}/blog/${post.slug}`;
+
     return {
         title: `${post.title} | Blog Saosini`,
         description: post.metaDescription || post.excerpt,
+        alternates: {
+            canonical: canonicalUrl,
+        },
         openGraph: {
             title: post.title,
             description: post.metaDescription || post.excerpt,
-            images: post.featuredImage ? [post.featuredImage] : []
+            images: post.featuredImage ? [{ url: post.featuredImage }] : [],
+            type: 'article',
+            publishedTime: post.publishedAt ? post.publishedAt.toISOString() : post.createdAt.toISOString(),
+            modifiedTime: post.updatedAt.toISOString(),
+            authors: post.author?.name ? [post.author.name] : ['Granja Saosini'],
+            url: canonicalUrl,
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: post.title,
+            description: post.metaDescription || post.excerpt,
+            images: post.featuredImage ? [post.featuredImage] : [],
         }
     };
 }
@@ -43,8 +60,42 @@ export default async function BlogPostPage({ params }: Props) {
     // Check if there is a custom React Component for this article
     const CustomArticleContent = getCustomArticleComponent(slug);
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://saosinicuyes.com';
+    const canonicalUrl = `${appUrl}/blog/${post.slug}`;
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: post.title,
+        description: post.metaDescription || post.excerpt,
+        image: post.featuredImage ? [post.featuredImage] : [],
+        datePublished: post.publishedAt ? post.publishedAt.toISOString() : post.createdAt.toISOString(),
+        dateModified: post.updatedAt.toISOString(),
+        author: {
+            '@type': 'Person',
+            name: post.author?.name || 'Granja Saosini',
+            url: appUrl,
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Granja Saosini',
+            logo: {
+                '@type': 'ImageObject',
+                url: `${appUrl}/icon.png`,
+            }
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id:': canonicalUrl,
+        },
+    };
+
     return (
         <article className="bg-neutral-50 min-h-screen font-sans selection:bg-primary/20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* CINEMATIC HERO SECTION */}
             <div className="relative h-[80vh] w-full overflow-hidden">
                 <div className="absolute inset-0">
