@@ -35,8 +35,8 @@ const slides = [
         subtitle: "Acompañamiento profesional desde el diseño de tu galpón hasta la comercialización.",
         ctaText: "Agendar Visita",
         ctaLink: "/contacto",
-        secondaryCtaText: "Ver Servicios",
-        secondaryCtaLink: "/servicios",
+        secondaryCtaText: "Ver Nosotros",
+        secondaryCtaLink: "/nosotros",
         color: "from-amber-600"
     }
 ];

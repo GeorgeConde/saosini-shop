@@ -14,7 +14,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
     const addItem = useCartStore((state) => state.addItem);
     const [added, setAdded] = useState(false);
-    const primaryImage = product.images?.find((img: any) => img.isPrimary)?.url || product.images?.[0]?.url || 'https://via.placeholder.com/400';
+    const primaryImage = product.images?.find((img: any) => img.isPrimary)?.url || product.images?.[0]?.url || '/images/placeholder.jpg';
 
     const handleAddToCart = () => {
         addItem({
@@ -34,24 +34,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ring-1 ring-neutral-200 flex flex-col h-full">
             {/* Product Image */}
             <Link href={`/catalogo/${product.slug}`} className="relative aspect-square overflow-hidden bg-neutral-100 block">
-                {primaryImage.includes('cloudinary.com') || !primaryImage.startsWith('http') ? (
-                    <CldImage
-                        src={primaryImage}
-                        alt={`${product.name} | Granja Saosini`}
-                        width={400}
-                        height={400}
-                        crop="fill"
-                        gravity="auto"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                ) : (
-                    <Image
-                        src={primaryImage}
-                        alt={`${product.name} | Granja Saosini`}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                )}
+                <Image
+                    src={primaryImage}
+                    alt={`${product.name} | Granja Saosini`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                />
                 {product.type === 'REPRODUCTOR_PREMIUM' && (
                     <div className="absolute top-3 left-3 bg-accent text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg uppercase tracking-wider">
                         Premium

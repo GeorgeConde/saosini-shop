@@ -21,7 +21,7 @@ export default function AddToCart({ product }: { product: Product }) {
     const [added, setAdded] = useState(false);
     const router = useRouter();
 
-    const primaryImage = product.images?.find((img) => img.isPrimary)?.url || product.images?.[0]?.url || '/placeholder.png';
+    const primaryImage = product.images?.find((img) => img.isPrimary)?.url || product.images?.[0]?.url || '/images/placeholder.jpg';
 
     const handleAddToCart = (redirect = false) => {
         addItem({

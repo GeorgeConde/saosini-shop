@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 import { OrderConfirmationEmail } from '@/components/emails/OrderConfirmationEmail';
 import * as React from 'react';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummykeyforbuild');
 
 export const sendOrderConfirmationEmail = async (
     email: string,

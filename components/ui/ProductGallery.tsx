@@ -19,7 +19,7 @@ interface ProductGalleryProps {
 
 export default function ProductGallery({ images, productName, isPremium }: ProductGalleryProps) {
     const sortedImages = [...images].sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
-    const [selectedImage, setSelectedImage] = useState(sortedImages[0]?.url || '/placeholder.png');
+    const [selectedImage, setSelectedImage] = useState(sortedImages[0]?.url || '/images/placeholder.jpg');
     const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -47,24 +47,13 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                                     : 'ring-neutral-200 hover:ring-primary/50'
                                     }`}
                             >
-                                {img.url.includes('cloudinary.com') || !img.url.startsWith('http') ? (
-                                    <CldImage
-                                        src={img.url}
-                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Granja Saosini`}
-                                        width={100}
-                                        height={125}
-                                        crop="fill"
-                                        className="object-contain w-full h-full bg-neutral-50"
-                                    />
-                                ) : (
-                                    <Image
-                                        src={img.url}
-                                        alt={img.altText || `${productName} - Imagen ${i + 1} | Granja Saosini`}
-                                        width={100}
-                                        height={125}
-                                        className="object-contain h-full w-full bg-neutral-50"
-                                    />
-                                )}
+                                <Image
+                                    src={img.url}
+                                    alt={img.altText || `${productName} - Imagen ${i + 1} | Granja Saosini`}
+                                    width={100}
+                                    height={125}
+                                    className="object-contain h-full w-full bg-neutral-50"
+                                />
                             </button>
                         ))}
                     </div>
@@ -80,31 +69,16 @@ export default function ProductGallery({ images, productName, isPremium }: Produ
                     onMouseLeave={() => setIsHovering(false)}
                     className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-sm ring-1 ring-neutral-200 bg-white cursor-crosshair"
                 >
-                    {selectedImage.includes('cloudinary.com') || !selectedImage.startsWith('http') ? (
-                        <CldImage
-                            src={selectedImage}
-                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Granja Saosini`}
-                            width={800}
-                            height={1000}
-                            crop="limit"
-                            className={`object-contain w-full h-full transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
-                            style={isHovering ? {
-                                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
-                            } : undefined}
-                            priority
-                        />
-                    ) : (
-                        <Image
-                            src={selectedImage}
-                            alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Granja Saosini`}
-                            fill
-                            className={`object-contain w-full h-full transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
-                            style={isHovering ? {
-                                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
-                            } : undefined}
-                            priority
-                        />
-                    )}
+                    <Image
+                        src={selectedImage}
+                        alt={images.find(img => img.url === selectedImage)?.altText || `${productName} | Granja Saosini`}
+                        fill
+                        className={`object-contain w-full h-full transition-transform duration-200 ${isHovering ? 'scale-[2.5]' : 'scale-100'}`}
+                        style={isHovering ? {
+                            transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
+                        } : undefined}
+                        priority
+                    />
 
                     {isPremium && (
                         <div className="absolute top-4 left-4 bg-accent text-white font-bold px-3 py-1 rounded-full shadow-lg flex items-center space-x-1 text-xs">
