@@ -1,11 +1,11 @@
-import { getOrderById } from '@/lib/actions/order';
+import { getCustomerOrderById } from '@/lib/actions/order';
 import Link from 'next/link';
 import { CheckCircle, ArrowRight, Package } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 export default async function SuccessPage({ params }: { params: { id: string } }) {
     const { id } = await params;
-    const { success, order } = await getOrderById(id);
+    const { success, order } = await getCustomerOrderById(id);
 
     if (!success || !order) {
         notFound();

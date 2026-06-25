@@ -130,6 +130,10 @@ export default function CheckoutPage() {
             const result = await createOrder(orderData);
 
             if (result.success && result.orderId) {
+                // If this is a WhatsApp checkout, trigger the wa.me link with orderNumber
+                if (!token) {
+                    handleWhatsAppCheckout((result as any).orderNumber);
+                }
                 clearCart();
                 router.push(`/checkout/success/${result.orderId}`);
             } else {
@@ -143,9 +147,9 @@ export default function CheckoutPage() {
         }
     };
 
-    const handleWhatsAppCheckout = () => {
+    const handleWhatsAppCheckout = (orderNumber?: string) => {
         // Construct message
-        let message = `*¡Hola! Quiero realizar un pedido en Granja Saosini:*\n\n`;
+        let message = `*¡Hola! Realicé el pedido #${orderNumber || ''} en la web de Granja Saosini:*\n\n`;
         items.forEach(item => {
             message += `• ${item.quantity}x ${item.name} - S/ ${(item.price * item.quantity).toFixed(2)}\n`;
         });
@@ -159,6 +163,9 @@ export default function CheckoutPage() {
         message += `Departamento: ${formData.department}\n`;
         if (formData.province) message += `Provincia: ${formData.province}\n`;
         if (formData.district) message += `Distrito: ${formData.district}\n`;
+        if (orderNumber) {
+            message += `\n_*Por favor, confírmenme los datos de pago para procesar mi orden #${orderNumber}_*`;
+        }
 
         const encodedMessage = encodeURIComponent(message);
         window.open(`https://wa.me/51926069493?text=${encodedMessage}`, '_blank');
@@ -195,8 +202,8 @@ export default function CheckoutPage() {
             return;
         }
 
-        // For now, redirect to WhatsApp as payment gateway is pending
-        handleWhatsAppCheckout();
+        // Save order and redirect
+        await processOrder();
     };
 
     if (!mounted) return null;
@@ -432,10 +439,15 @@ export default function CheckoutPage() {
                             <div className="space-y-3 mt-8">
                                 <button
                                     type="submit"
-                                    className="w-full btn-primary bg-[#25D366] hover:bg-[#1fb854] py-4 text-lg shadow-xl shadow-green-900/10 flex items-center justify-center space-x-2"
+                                    disabled={isSubmitting}
+                                    className="w-full btn-primary bg-[#25D366] hover:bg-[#1fb854] py-4 text-lg shadow-xl shadow-green-900/10 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <MessageCircle className="w-6 h-6" />
-                                    <span>Completar Pedido por WhatsApp</span>
+                                    {isSubmitting ? (
+                                        <Loader2 className="w-6 h-6 animate-spin" />
+                                    ) : (
+                                        <MessageCircle className="w-6 h-6" />
+                                    )}
+                                    <span>{isSubmitting ? "Procesando..." : "Completar Pedido por WhatsApp"}</span>
                                 </button>
 
                                 <div className="relative group">

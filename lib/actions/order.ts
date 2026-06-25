@@ -173,7 +173,7 @@ export async function createOrder(rawData: unknown) {
             ).catch(err => console.error("Error in background admin notification:", err));
         }
 
-        return { success: true, orderId: order.id };
+        return { success: true, orderId: order.id, orderNumber: order.orderNumber };
 
     } catch (error) {
         console.error("Error creating order:", error);
@@ -209,6 +209,50 @@ export async function getOrders(limit = 10, offset = 0) {
     } catch (error) {
         console.error("Error fetching orders:", error);
         return { success: false, error: "Error al obtener pedidos" };
+    }
+}
+
+export async function getCustomerOrderById(id: string) {
+    try {
+        const order = await prisma.order.findUnique({
+            where: { id },
+            include: {
+                items: {
+                    include: {
+                        product: {
+                            include: {
+                                images: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!order) return { success: false, error: "Pedido no encontrado" };
+
+        const serializedOrder = {
+            ...order,
+            total: Number(order.total),
+            subtotal: Number(order.subtotal),
+            shippingCost: Number(order.shippingCost),
+            discount: Number(order.discount),
+            items: order.items.map((item: any) => ({
+                ...item,
+                price: Number(item.price),
+                subtotal: Number(item.subtotal),
+                product: item.product ? {
+                    ...item.product,
+                    price: Number(item.product.price),
+                    compareAtPrice: item.product.compareAtPrice ? Number(item.product.compareAtPrice) : null
+                } : null
+            }))
+        };
+
+        return { success: true, order: serializedOrder };
+    } catch (error) {
+        console.error("Error fetching customer order:", error);
+        return { success: false, error: "Error al obtener el pedido" };
     }
 }
 
