@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 // Rate limiting check
-                const { allowed, retryAfterMs } = rateLimit(
+                const { allowed, retryAfterMs } = await rateLimit(
                     `login:${credentials.email.toLowerCase()}`,
                     LOGIN_MAX_ATTEMPTS,
                     LOGIN_WINDOW_MS
