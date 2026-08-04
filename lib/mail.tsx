@@ -45,8 +45,11 @@ export const sendAdminOrderNotification = async (
 ) => {
     try {
         const { data, error } = await resend.emails.send({
+            // TODO: verificar saosinicuyes.com en Resend y enviar desde una
+            // dirección propia (p.ej. pedidos@saosinicuyes.com) — el dominio
+            // sandbox de Resend generalmente no entrega a destinatarios reales.
             from: 'Granja Saosini <onboarding@resend.dev>',
-            to: ['gacp_@hotmail.com'],
+            to: [process.env.ADMIN_NOTIFICATION_EMAIL || 'gacp_@hotmail.com'],
             subject: `NUEVO PEDIDO #${orderNumber} - Granja Saosini`,
             html: `
         <h1>Nuevo pedido recibido</h1>

@@ -176,7 +176,12 @@ export default function Navbar() {
                                     <Settings className="w-5 h-5" />
                                 </Link>
                             )}
-                            <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-white hover:text-secondary transition-colors">
+                            <button
+                                onClick={() => setIsOpen(!isOpen)}
+                                aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+                                aria-expanded={isOpen}
+                                className="p-2 text-white hover:text-secondary transition-colors"
+                            >
                                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                             </button>
                         </div>

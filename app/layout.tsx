@@ -15,6 +15,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://saosinicuyes.com"),
   title: {
     default: "Granja Saosini - Especialistas en Crianza de Cuyes",
     template: "%s | Granja Saosini"
