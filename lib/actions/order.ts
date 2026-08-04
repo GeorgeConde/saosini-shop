@@ -22,7 +22,7 @@ export async function createOrder(rawData: unknown) {
     const data = parsed.data;
 
     // Rate limiting by customer email
-    const { allowed } = rateLimit(
+    const { allowed } = await rateLimit(
         `order:${data.customerEmail.toLowerCase()}`,
         ORDER_MAX_PER_HOUR,
         ORDER_WINDOW_MS
@@ -80,54 +80,64 @@ export async function createOrder(rawData: unknown) {
         const total = subtotal + shippingCost;
 
         // 3. Create Order Transaction
-        const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-            // Generate order number (simple timestamp based for MVP)
-            const orderNumber = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`;
+        let order;
+        try {
+            order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+                // Generate order number (simple timestamp based for MVP)
+                const orderNumber = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`;
 
-            // Create Order
-            const newOrder = await tx.order.create({
-                data: {
-                    orderNumber,
-                    customerName,
-                    customerEmail,
-                    customerPhone,
-                    shippingAddress,
-                    status: 'PENDING',
-                    paymentStatus: 'PENDING',
-                    shippingCost,
-                    subtotal,
-                    discount: 0,
-                    total,
-                    paymentMethod: paymentToken ? 'Card' : 'Other',
-                    items: {
-                        create: orderItemsData.map((item: any) => ({
-                            productId: item.productId,
-                            quantity: item.quantity,
-                            price: item.price,
-                            subtotal: item.subtotal,
-                            productSnapshot: item.productSnapshot
-                        }))
+                // Create Order
+                const newOrder = await tx.order.create({
+                    data: {
+                        orderNumber,
+                        customerName,
+                        customerEmail,
+                        customerPhone,
+                        shippingAddress,
+                        status: 'PENDING',
+                        paymentStatus: 'PENDING',
+                        shippingCost,
+                        subtotal,
+                        discount: 0,
+                        total,
+                        paymentMethod: paymentToken ? 'Card' : 'Other',
+                        items: {
+                            create: orderItemsData.map((item: any) => ({
+                                productId: item.productId,
+                                quantity: item.quantity,
+                                price: item.price,
+                                subtotal: item.subtotal,
+                                productSnapshot: item.productSnapshot
+                            }))
+                        }
+                    }
+                });
+
+                // Update stock atomically: the `gte` guard means concurrent orders for
+                // the same product can't both succeed if only one has stock left — the
+                // loser's updateMany affects 0 rows and we roll back the whole order.
+                for (const item of items) {
+                    const product = products.find((p: any) => p.id === item.id);
+                    if (product && product.manageInventory) {
+                        const result = await tx.product.updateMany({
+                            where: { id: item.id, stockQuantity: { gte: item.quantity } },
+                            data: { stockQuantity: { decrement: item.quantity } }
+                        });
+                        if (result.count === 0) {
+                            throw new Error(`STOCK_INSUFFICIENT:${product.name}`);
+                        }
                     }
                 }
+
+                return newOrder;
             });
-
-            // Update Stock
-            for (const item of items) {
-                const product = products.find((p: any) => p.id === item.id);
-                if (product && product.manageInventory) {
-                    await tx.product.update({
-                        where: { id: item.id },
-                        data: {
-                            stockQuantity: {
-                                decrement: item.quantity
-                            }
-                        }
-                    });
-                }
+        } catch (txError) {
+            const message = txError instanceof Error ? txError.message : '';
+            if (message.startsWith('STOCK_INSUFFICIENT:')) {
+                return { success: false, error: `Stock insuficiente para ${message.split(':')[1]}` };
             }
-
-            return newOrder;
-        });
+            throw txError;
+        }
 
         // 4. Process Payment if Token exists
         if (paymentToken) {
@@ -140,9 +150,22 @@ export async function createOrder(rawData: unknown) {
                     data: { paymentStatus: 'PAID', status: 'PROCESSING' } // Auto-advance status if paid
                 });
             } else {
-                await prisma.order.update({
-                    where: { id: order.id },
-                    data: { paymentStatus: 'FAILED' }
+                // Payment failed: release the stock that was reserved above so it
+                // isn't permanently lost on a declined card.
+                await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+                    await tx.order.update({
+                        where: { id: order.id },
+                        data: { paymentStatus: 'FAILED' }
+                    });
+                    for (const item of items) {
+                        const product = products.find((p: any) => p.id === item.id);
+                        if (product && product.manageInventory) {
+                            await tx.product.update({
+                                where: { id: item.id },
+                                data: { stockQuantity: { increment: item.quantity } }
+                            });
+                        }
+                    }
                 });
                 return { success: false, error: `Error en el pago: ${chargeResult.error}`, orderId: order.id };
             }
@@ -212,18 +235,25 @@ export async function getOrders(limit = 10, offset = 0) {
     }
 }
 
+// Public — no auth (the customer just placed the order and has no account).
+// Only select what the public confirmation page actually shows: phone,
+// shipping address and internal order fields stay out of this response.
 export async function getCustomerOrderById(id: string) {
     try {
         const order = await prisma.order.findUnique({
             where: { id },
-            include: {
+            select: {
+                orderNumber: true,
+                customerName: true,
+                customerEmail: true,
+                createdAt: true,
+                total: true,
                 items: {
-                    include: {
-                        product: {
-                            include: {
-                                images: true
-                            }
-                        }
+                    select: {
+                        id: true,
+                        quantity: true,
+                        subtotal: true,
+                        productSnapshot: true,
                     }
                 }
             }
@@ -234,18 +264,9 @@ export async function getCustomerOrderById(id: string) {
         const serializedOrder = {
             ...order,
             total: Number(order.total),
-            subtotal: Number(order.subtotal),
-            shippingCost: Number(order.shippingCost),
-            discount: Number(order.discount),
-            items: order.items.map((item: any) => ({
+            items: order.items.map((item) => ({
                 ...item,
-                price: Number(item.price),
                 subtotal: Number(item.subtotal),
-                product: item.product ? {
-                    ...item.product,
-                    price: Number(item.product.price),
-                    compareAtPrice: item.product.compareAtPrice ? Number(item.product.compareAtPrice) : null
-                } : null
             }))
         };
 
