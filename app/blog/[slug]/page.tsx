@@ -4,8 +4,15 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Calendar, User, Clock, ChevronLeft } from 'lucide-react';
 import { Metadata } from 'next';
+import { renderPostContent } from '@/lib/sanitize-content';
 import ShareButtons from '../components/ShareButtons';
-import { getCustomArticleComponent } from '../components/ContentRegistry';
+import { renderCustomArticle } from '../components/ContentRegistry';
+
+// Embedding JSON as a <script> body is safe against script-tag breakout as
+// long as literal "</" sequences are escaped first.
+function toSafeJsonLd(value: unknown): string {
+    return JSON.stringify(value).replace(/</g, '\\u003c');
+}
 
 export const revalidate = 60;
 
@@ -57,8 +64,13 @@ export default async function BlogPostPage({ params }: Props) {
         notFound();
     }
 
-    // Check if there is a custom React Component for this article
-    const CustomArticleContent = getCustomArticleComponent(slug);
+    // Check if there is a custom React Component for this article — resolved
+    // and rendered inside ContentRegistry itself, so this component never
+    // holds a bare component-type variable in its own render (see
+    // react-hooks/static-components).
+    const customArticle = renderCustomArticle(slug, post);
+
+    const renderedContent = customArticle ? '' : renderPostContent(post.content);
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://saosinicuyes.com';
     const canonicalUrl = `${appUrl}/blog/${post.slug}`;
@@ -86,7 +98,7 @@ export default async function BlogPostPage({ params }: Props) {
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id:': canonicalUrl,
+            '@id': canonicalUrl,
         },
     };
 
@@ -94,7 +106,7 @@ export default async function BlogPostPage({ params }: Props) {
         <article className="bg-neutral-50 min-h-screen font-sans selection:bg-primary/20">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: toSafeJsonLd(jsonLd) }}
             />
             {/* CINEMATIC HERO SECTION */}
             <div className="relative h-[80vh] w-full overflow-hidden">
@@ -163,9 +175,9 @@ export default async function BlogPostPage({ params }: Props) {
                             Volver al blog
                         </Link>
 
-                        {CustomArticleContent ? (
+                        {customArticle ? (
                             /* CUSTOM REACT CONTENT */
-                            <CustomArticleContent post={post} />
+                            customArticle
                         ) : (
                             /* DEFAULT DYNAMIC CONTENT (Fallback) */
                             <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 lg:p-16 ring-1 ring-neutral-100/50">
@@ -239,7 +251,7 @@ export default async function BlogPostPage({ params }: Props) {
                                     prose-td:p-4 prose-td:border-t prose-td:border-neutral-200
                                     prose-tr:hover:bg-neutral-50
                                 ">
-                                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                                    <div dangerouslySetInnerHTML={{ __html: renderedContent }} />
                                 </div>
 
                                 {/* Share Section */}

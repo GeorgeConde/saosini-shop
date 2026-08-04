@@ -212,6 +212,8 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
+                    // Escape "<" so a description containing "</script>" can't
+                    // break out of this tag.
                     __html: JSON.stringify({
                         "@context": "https://schema.org/",
                         "@type": "Product",
@@ -231,7 +233,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                             "availability": product.stockQuantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
                             "itemCondition": "https://schema.org/NewCondition"
                         }
-                    })
+                    }).replace(/</g, '\\u003c')
                 }}
             />
         </div >

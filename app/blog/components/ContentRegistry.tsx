@@ -1,4 +1,4 @@
-import { ComponentType } from 'react';
+import { ComponentType, ReactNode } from 'react';
 import AlimentacionArticle from './articles/AlimentacionArticle';
 import SeleccionGeneticaArticle from './articles/SeleccionGeneticaArticle';
 import EctoparasitosArticle from './articles/EctoparasitosArticle';
@@ -14,6 +14,15 @@ const articleRegistry: Record<string, ComponentType<{ post: any }>> = {
     // Future articles can be added here
 };
 
-export function getCustomArticleComponent(slug: string): ComponentType<{ post: any }> | null {
-    return articleRegistry[slug] || null;
+export function hasCustomArticleComponent(slug: string): boolean {
+    return slug in articleRegistry;
+}
+
+// Resolves and renders in one step (rather than handing back a component
+// type) so callers never hold a component reference inside their own render —
+// that pattern trips react-hooks/static-components ("components created
+// during render lose their state on every re-render").
+export function renderCustomArticle(slug: string, post: any): ReactNode | null {
+    const Component = articleRegistry[slug];
+    return Component ? <Component post={post} /> : null;
 }
